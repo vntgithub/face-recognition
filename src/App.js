@@ -5,15 +5,13 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import loginPage from './pages/login.page';
+import signinPage from './pages/signin.page';
 function App() {
-  const home = <h1>Home</h1>;
   return (
     <Router>
-      
+      {document.location.pathname === '/' && <h1>Home</h1>}
       <Switch>
-        <Route exact path="/" component={home} />
-        <Route exact path="/login" component={loginPage}/>
+        <Route exact path="/login" component={signinPage}/>
       </Switch>
     </Router>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -48,11 +48,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignIn() {
   const classes = useStyles();
-  const handleLogin = () => {
-    const usernameInput = document.getElementById('email').value;
-    const passwordInput = document.getElementById('password').value;
-    console.log(usernameInput, passwordInput);
-  }
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -61,9 +57,9 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign up
         </Typography>
-        <form id="loginForm" className={classes.form} >
+        <form className={classes.form} noValidate>
           <TextField
             variant="outlined"
             margin="normal"
@@ -80,34 +76,48 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
+            id="name"
+            label="Your name"
+            name="name"
+            autoComplete="Your name"
+            autoFocus
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="code"
+            label="Your code"
+            name="code"
+            autoComplete="Your code"
+            autoFocus
+          />
+
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
             name="password"
             label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
           <Button
-            onClick={handleLogin}
+            type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
           >
-            Sign In
+            Sign Up
           </Button>
           <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
             <Grid item>
-              <Link href="/signup" variant="body2">
-                {"Don't have an account? Sign Up"}
+              <Link href="#" variant="body2">
+                {"Sign In"}
               </Link>
             </Grid>
           </Grid>

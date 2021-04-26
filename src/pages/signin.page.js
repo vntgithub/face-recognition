@@ -12,9 +12,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { useDispatch, useSelector } from 'react-redux';
-import { signin } from '../features/user';
-
+import { useDispatch } from 'react-redux';
+import { login } from '../features/student';
+import { unwrapResult } from '@reduxjs/toolkit';
+import axiosClient from '../api/axiosClinet';
+import { useHistory } from 'react-router';
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -49,17 +51,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignIn() {
-  const user = useSelector((state) => state);
+  const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
-  const handleLogin = () => {
+  const handleLogin = async() => {
     const usernameInput = document.getElementById('email').value;
     const passwordInput = document.getElementById('password').value;
-    dispatch(signin({
-      username: usernameInput, 
+    const dataLogin = {
+      username: usernameInput,
       password: passwordInput
-     })
-    )
+    }
+    const loginActionResult = await dispatch(login(dataLogin));
+    const userData = unwrapResult(loginActionResult);
+    axiosClient.defaults.headers.common['Authorization'] = userData.token;
+    // history.push('/hone')
   }
   return (
     <Container component="main" maxWidth="xs">

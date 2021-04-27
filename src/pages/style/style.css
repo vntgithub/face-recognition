@@ -1,0 +1,12 @@
+.hidden {
+    display: none !important;
+}
+.hiddenInputImgae {
+    visibility: hidden;
+}
+.reviewImg{
+    width: 100px !important;
+    height: 100px !important;
+    display: inline-flex !important;
+    margin-left: 100px !important;
+}

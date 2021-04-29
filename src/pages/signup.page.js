@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-
+import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,7 +17,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
 
+import studentApi from '../api/student.api';
+import teacherApi from '../api/teacher.api';
+
 import './style/style.css';
+
+
+
 
 
 function Copyright() {
@@ -50,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    
   },
   spaceingAndWith: {
     margin: theme.spacing(2, 4, 1, 0),
@@ -72,14 +79,17 @@ const useStyles = makeStyles((theme) => ({
   mediumWidth: {
     minWidth: 150
   }, 
+  
 }));
 
 
 export default function SignIn() {
   const classes = useStyles();
+  const [success, setSuccess] = React.useState(false);
+  const [dataForm, setDataForm] = React.useState({});
   const [position, setPosition] = React.useState('');
   const [open, setOpen] = React.useState(false);
-  const [image, setImage] = React.useState(null);
+  const [file, setFile] = React.useState(null);
   const [srcImage, setSrcImage] = React.useState('');
   const [err, setErr] = React.useState({
     name: false,
@@ -90,7 +100,7 @@ export default function SignIn() {
     position: false,
     image: false
   });
-  const regexCode = /^[a-z]{2}\d{3,}$/;
+  const regexCode = /^[a-zA-Z0-9]{5,}$/;
   const regexPassword = /[a-zA-z0-9]{8}/;
 
   const handleChange = (event) => {
@@ -109,11 +119,8 @@ export default function SignIn() {
   }
   const getImage = (e) => {
     const file = e.target.files;
-    const imageData  = new FormData();
-    imageData.append('file', file[0]);
-    imageData.append('upload_preset', 'usersimage');
-    setImage(imageData);
-    //Review
+    setFile(file);
+ 
     let reader = new FileReader();
     reader.onload = function (e) {
             setSrcImage(e.target.result);
@@ -121,13 +128,13 @@ export default function SignIn() {
 
     reader.readAsDataURL(file[0]);
 }
-  const vadlidateData = () => {
+  const vadlidateData = async () => {
     let check = true;
     let newErr = {...err};
     const name = document.getElementById('name').value;
     const code =document.getElementById('code').value;
-    const username =document.getElementById('username').value;
-    const password =document.getElementById('password').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
     const passwordConfirm =document.getElementById('passwordConfirm').value;
     if(name === ''){
       check &= false;
@@ -140,15 +147,38 @@ export default function SignIn() {
       check &= false;
       newErr.code = true;
     }else{
-      newErr.code = false;
+      await studentApi.checkCode(code)
+      .then(resData => {
+        //check = false when code aldredy exist
+        if(!resData){
+          check &= false;
+          newErr.code = true;
+          document.getElementById('codeAlert').innerHTML = 'Code already exist';
+        }else{
+          newErr.code = false;
+          document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
+        }
+      })
+      
 
     }
     if(username === '' || !regexPassword.test(username)){
       check &= false;
       newErr.username = true;
     }else{
-      newErr.username = false;
+      await studentApi.checkUsername(username)
+      .then(resData => {
+        if(!resData){
+          check &= false;
+          newErr.username = true;
+          document.getElementById('usernameAlert').innerHTML = 'Username already exist';
+        }else{
+          newErr.username = false;
+          document.getElementById('usernameAlert').innerHTML = 'Username is require, use 8 characters or more for your username';
+        }
+      })
     }
+    
     if(password === '' || !regexPassword.test(password)){
       check &= false;
       newErr.password = true;
@@ -167,18 +197,49 @@ export default function SignIn() {
     }else{
       newErr.position = false;
     }
-    if(!image){
+    if(!file){
       check &= false;
       newErr.image = true
     }else{
       newErr.image = false;
     }
+    
+    
 
     setErr(newErr);
+    setDataForm({
+      username,
+      password,
+      name,
+      code,
+      img: ''
+    });
     return check;
   }
   const submit = async() => {
-    console.log('check: ', vadlidateData());
+    vadlidateData().then(async (check) => {
+      if(check){
+        let form = new FormData();
+        form.append('image', file[0]);
+        for(let key in dataForm){
+          form.append(key, dataForm[key]);
+        }
+        if(position === 'student'){
+          await studentApi.create(form)
+          .then(resData => console.log(resData))
+          .catch(err => console.log(err))
+        }else{
+          await teacherApi.create(dataForm)
+          .then(resData => console.log(resData))
+          .catch(err => console.log(err))
+        }
+        setSuccess(true);
+        // setTimeout(() => {
+        //   history('/signin');
+        // }, 3000);
+      }
+    })
+    
   }
 
   return (
@@ -217,9 +278,16 @@ export default function SignIn() {
           />
           <Alert 
             severity="error"
-            className={classnames({"hidden": !(err.name || err.code)})}
+            className={classnames({"hidden": !(err.name)})}
           >
-            Name and code is require, use 5 characters or more for your code. Example for code: ct123
+            Name  is require
+          </Alert>
+          <Alert
+            id="codeAlert"
+            severity="error"
+            className={classnames({"hidden": !(err.code)})}
+          >
+            Code is require, use 5 characters or more for your code.
           </Alert>
           <TextField
             error="true"
@@ -235,6 +303,7 @@ export default function SignIn() {
             error={err.username}
           />
           <Alert 
+            id="usernameAlert"
             severity="error"
             className={classnames({"hidden": !err.username})}
           >
@@ -343,6 +412,12 @@ export default function SignIn() {
               </Link>
             </Grid>
           </Grid>
+          <Alert 
+            severity="success"
+            className={classnames({"alertSuccess": true, "hidden": !success})}  
+          >
+            You have signed up successfully!
+          </Alert>
         </form>
       </div>
       <Box mt={8}>

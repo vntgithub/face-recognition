@@ -13,9 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useDispatch } from 'react-redux';
-import { login } from '../features/student';
+import { login } from '../features/user';
 import { unwrapResult } from '@reduxjs/toolkit';
-import axiosClient from '../api/axiosClinet';
 import { useHistory } from 'react-router';
 function Copyright() {
   return (
@@ -61,9 +60,9 @@ export default function SignIn() {
       username: usernameInput,
       password: passwordInput
     }
-    const loginActionResult = await dispatch(login(dataLogin));
+    const loginActionResult = await dispatch(login(dataLogin, 'teacher'));
     const userData = unwrapResult(loginActionResult);
-    axiosClient.defaults.headers.common['Authorization'] = userData.token;
+    //axiosClient.defaults.headers.common['Authorization'] = userData.token;
     // history.push('/hone')
   }
   return (
@@ -99,6 +98,7 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
+          
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"

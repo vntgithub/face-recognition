@@ -1,6 +1,9 @@
 .hidden {
     display: none !important;
 }
+.alertSuccess {
+    margin-top: 15px;
+}
 .hiddenInputImgae {
     visibility: hidden;
 }

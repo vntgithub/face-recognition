@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import userReducer from './features/student';
+import userReducer from './features/user';
 
 const reducer = combineReducers({
     user: userReducer

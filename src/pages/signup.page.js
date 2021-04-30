@@ -148,17 +148,30 @@ export default function SignIn() {
       newErr.code = true;
     }else{
       await studentApi.checkCode(code)
-      .then(resData => {
-        //check = false when code aldredy exist
-        if(!resData){
-          check &= false;
-          newErr.code = true;
-          document.getElementById('codeAlert').innerHTML = 'Code already exist';
-        }else{
-          newErr.code = false;
-          document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
-        }
-      })
+        .then(resData => {
+          //resData = false when code aldredy exist
+          if(!resData){
+            check &= false;
+            newErr.code = true;
+            document.getElementById('codeAlert').innerHTML = 'Code already exist';
+          }else{
+            newErr.code = false;
+            document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
+          }
+        })
+
+        await teacherApi.checkCode(code)
+        .then(resData => {
+          //resData = false when code aldredy exist
+          if(!resData){
+            check &= false;
+            newErr.code = true;
+            document.getElementById('codeAlert').innerHTML = 'Code already exist';
+          }else{
+            newErr.code = false;
+            document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
+          }
+        })
       
 
     }
@@ -167,6 +180,17 @@ export default function SignIn() {
       newErr.username = true;
     }else{
       await studentApi.checkUsername(username)
+      .then(resData => {
+        if(!resData){
+          check &= false;
+          newErr.username = true;
+          document.getElementById('usernameAlert').innerHTML = 'Username already exist';
+        }else{
+          newErr.username = false;
+          document.getElementById('usernameAlert').innerHTML = 'Username is require, use 8 characters or more for your username';
+        }
+      })
+      await teacherApi.checkUsername(username)
       .then(resData => {
         if(!resData){
           check &= false;
@@ -229,7 +253,7 @@ export default function SignIn() {
           .then(resData => console.log(resData))
           .catch(err => console.log(err))
         }else{
-          await teacherApi.create(dataForm)
+          await teacherApi.create(form)
           .then(resData => console.log(resData))
           .catch(err => console.log(err))
         }
@@ -237,6 +261,8 @@ export default function SignIn() {
         // setTimeout(() => {
         //   history('/signin');
         // }, 3000);
+      }else{
+
       }
     })
     

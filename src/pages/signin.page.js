@@ -87,9 +87,14 @@ export default function SignIn() {
   const handleLogin = async() => {
     const check = validata();
     if(check){
-      const loginActionResult = await dispatch(login(data, position));
+      const loginActionResult = await dispatch(login({data, position}));
       const userData = unwrapResult(loginActionResult);
-      console.log(userData);
+      if(userData.token){
+        localStorage.setItem('token', userData.token);
+        setErr(false);
+      }else{
+        setErr(true);
+      }
     }else{
       console.log('something wrong!');
     }

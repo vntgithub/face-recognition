@@ -5,13 +5,12 @@ import teacherApi from '../api/teacher.api';
 
 export const login = createAsyncThunk(
     'user/login',
-    async (dataLogin, position) => {
-        if(position === 'student'){
-            const data = await studentApi.login(dataLogin);
+    async (form) => {
+        if(form.position === 'student'){
+            const data = await studentApi.login(form.data);
             return data;
-        }
-        if(position === 'teacher'){
-            const data = await teacherApi.login(dataLogin);
+        }else{
+            const data = await teacherApi.login(form.data);
             return data;
         }
     }

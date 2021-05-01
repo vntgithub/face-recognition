@@ -1,20 +1,13 @@
 import React from 'react';
 import classnames from 'classnames';
-import axios from 'axios';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import {
+  Avatar, Button, CssBaseline, TextField,
+  Link, Grid, Box, Container, RadioGroup, FormControlLabel, Radio
+} from '@material-ui/core';
+
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
 
 import studentApi from '../api/student.api';
@@ -86,9 +79,15 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const [success, setSuccess] = React.useState(false);
-  const [dataForm, setDataForm] = React.useState({});
-  const [position, setPosition] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+  const [dataForm, setDataForm] = React.useState({
+    username: '',
+    password: '',
+    passwordConfirm: '',
+    name: '',
+    code: '',
+    img: ''
+  });
+  const [position, setPosition] = React.useState('student');
   const [file, setFile] = React.useState(null);
   const [srcImage, setSrcImage] = React.useState('');
   const [err, setErr] = React.useState({
@@ -103,20 +102,14 @@ export default function SignIn() {
   const regexCode = /^[a-zA-Z0-9]{5,}$/;
   const regexPassword = /[a-zA-z0-9]{8}/;
 
-  const handleChange = (event) => {
-    setPosition(event.target.value);
-  };
-  
-  const handleClose = () => {
-    setOpen(false);
-  };
-  
-  const handleOpen = () => {
-    setOpen(true);
-  };
-  const handleInput = () => {
-    document.getElementById('image').click();
-  }
+  const handleChange = (event) => setPosition(event.target.value);
+  const getName = (event) => setDataForm({...dataForm, name: event.target.value});
+  const getCode = (event) => setDataForm({...dataForm, code: event.target.value});
+  const getUsername = (event) => setDataForm({...dataForm, username: event.target.value});
+  const getPassword = (event) => setDataForm({...dataForm, password: event.target.value});
+  const getPasswordConfirm = (event) => setDataForm({...dataForm, passwordConfirm: event.target.value});
+  const handleInput = () => document.getElementById('image').click();
+
   const getImage = (e) => {
     const file = e.target.files;
     setFile(file);
@@ -131,23 +124,19 @@ export default function SignIn() {
   const vadlidateData = async () => {
     let check = true;
     let newErr = {...err};
-    const name = document.getElementById('name').value;
-    const code =document.getElementById('code').value;
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const passwordConfirm =document.getElementById('passwordConfirm').value;
-    if(name === ''){
+    
+    if(dataForm.name === ''){
       check &= false;
       newErr.name = true;
     }else{
       newErr.name = false;
     }
       
-    if(code === '' || !regexCode.test(code)){
+    if(dataForm.code === '' || !regexCode.test(dataForm.code)){
       check &= false;
       newErr.code = true;
     }else{
-      await studentApi.checkCode(code)
+      await studentApi.checkCode(dataForm.code)
         .then(resData => {
           //resData = false when code aldredy exist
           if(!resData){
@@ -160,7 +149,7 @@ export default function SignIn() {
           }
         })
 
-        await teacherApi.checkCode(code)
+        await teacherApi.checkCode(dataForm.code)
         .then(resData => {
           //resData = false when code aldredy exist
           if(!resData){
@@ -175,11 +164,11 @@ export default function SignIn() {
       
 
     }
-    if(username === '' || !regexPassword.test(username)){
+    if(dataForm.username === '' || !regexPassword.test(dataForm.username)){
       check &= false;
       newErr.username = true;
     }else{
-      await studentApi.checkUsername(username)
+      await studentApi.checkUsername(dataForm.username)
       .then(resData => {
         if(!resData){
           check &= false;
@@ -190,7 +179,7 @@ export default function SignIn() {
           document.getElementById('usernameAlert').innerHTML = 'Username is require, use 8 characters or more for your username';
         }
       })
-      await teacherApi.checkUsername(username)
+      await teacherApi.checkUsername(dataForm.username)
       .then(resData => {
         if(!resData){
           check &= false;
@@ -203,13 +192,13 @@ export default function SignIn() {
       })
     }
     
-    if(password === '' || !regexPassword.test(password)){
+    if(dataForm.password === '' || !regexPassword.test(dataForm.password)){
       check &= false;
       newErr.password = true;
     }else{
       newErr.password = false;
     }
-    if(passwordConfirm === '' || password !== passwordConfirm){
+    if(dataForm.passwordConfirm === '' || dataForm.password !== dataForm.passwordConfirm){
       check &= false;
       newErr.passwordConfirm = true;
     }else{
@@ -228,24 +217,17 @@ export default function SignIn() {
       newErr.image = false;
     }
     
-    
-
     setErr(newErr);
-    setDataForm({
-      username,
-      password,
-      name,
-      code,
-      img: ''
-    });
     return check;
   }
-  const submit = async() => {
+  const submit = () => {
     vadlidateData().then(async (check) => {
       if(check){
+        let data = {...dataForm};
+        delete data.passwordConfirm;
         let form = new FormData();
         form.append('image', file[0]);
-        for(let key in dataForm){
+        for(let key in data){
           form.append(key, dataForm[key]);
         }
         if(position === 'student'){
@@ -258,13 +240,10 @@ export default function SignIn() {
           .catch(err => console.log(err))
         }
         setSuccess(true);
-        // setTimeout(() => {
-        //   history('/signin');
-        // }, 3000);
-      }else{
 
       }
     })
+    .catch(err => console.log(err));
     
   }
 
@@ -290,6 +269,7 @@ export default function SignIn() {
             autoComplete="Your name"
             autoFocus
             error={err.name}
+            onChange={getName}
           />
           <TextField
             variant="outlined"
@@ -301,6 +281,7 @@ export default function SignIn() {
             autoComplete="Your code"
             autoFocus
             error={err.code}
+            onChange={getCode}
           />
           <Alert 
             severity="error"
@@ -327,6 +308,7 @@ export default function SignIn() {
             autoComplete="Username"
             autoFocus
             error={err.username}
+            onChange={getUsername}
           />
           <Alert 
             id="usernameAlert"
@@ -346,6 +328,7 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
             error={err.password}
+            onChange={getPassword}
           />
           <Alert 
             severity="error"
@@ -364,6 +347,7 @@ export default function SignIn() {
             id="passwordConfirm"
             autoComplete="current-password"
             error={err.passwordConfirm}
+            onChange={getPasswordConfirm}
           />
           <Alert 
             id="passwordConfirm"
@@ -372,29 +356,10 @@ export default function SignIn() {
           >
             Those passwords didn’t match. Try again.
           </Alert>
-        <InputLabel 
-          className={classes.spaceingAndWith} 
-          id="demo-controlled-open-select-label"
-          >
-            Position
-        </InputLabel>
-        <Select
-          labelId="demo-controlled-open-select-label"
-          id="position"
-          open={open}
-          onClose={handleClose}
-          onOpen={handleOpen}
-          value={position}
-          onChange={handleChange}
-          className={classes.mediumWidth}
-          error={err.position}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={'student'}>Student</MenuItem>
-          <MenuItem value={'teacher'}>Teacher</MenuItem>
-        </Select>
+          <RadioGroup className={classes.childInline}  name="position" value={position} onChange={handleChange}>
+              <FormControlLabel  value="student" control={<Radio />} label="Student" />
+              <FormControlLabel  value="teacher" control={<Radio />} label="Teacher" />
+          </RadioGroup>
 
         <input 
           className="hidden" 

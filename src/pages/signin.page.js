@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
 import { useDispatch } from 'react-redux';
-import { login } from '../features/user';
+import { login } from '../slices/user';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useHistory } from 'react-router';
+
+import {
+  Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox,
+  Link, Grid, Box, Radio, RadioGroup, Typography, Container
+} from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { makeStyles } from '@material-ui/core/styles';
+
+
+
+import './style/style.css';
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -47,21 +45,54 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  childInline: {
+    flexDirection: 'row'
+  }
 }));
 
 export default function SignIn() {
-  const history = useHistory();
+  const [data, setData] = useState({
+    username: '',
+    password: ''
+  })
+  const [err, setErr] = useState(false);
+  const [position, setPosition] = useState('student');
+  const [rememberme, setRememberme] = useState(true);
   const dispatch = useDispatch();
   const classes = useStyles();
-  const handleLogin = async() => {
-    const usernameInput = document.getElementById('email').value;
-    const passwordInput = document.getElementById('password').value;
-    const dataLogin = {
-      username: usernameInput,
-      password: passwordInput
+  const handleChange = (event) => {
+    setPosition(event.target.value);
+  };
+  const handleChangeRememberMe = () => {
+    setRememberme(!rememberme);
+  }
+  const getUsername = (event) => setData({...data, username: event.target.value});
+  const getPassword = (event) => setData({...data, password: event.target.value});
+  const validata = () => {
+    let check = true;
+    if(data.username === ''){
+      check &= false;
+      setErr(true);
+    }else{
+      setErr(false);
     }
-    const loginActionResult = await dispatch(login(dataLogin, 'teacher'));
-    const userData = unwrapResult(loginActionResult);
+    if(data.password === ''){
+      check &= false;
+      setErr(true);
+    }else{
+      setErr(false);
+    }
+    return check;
+  }
+  const handleLogin = async() => {
+    const check = validata();
+    if(check){
+      const loginActionResult = await dispatch(login(data, position));
+      const userData = unwrapResult(loginActionResult);
+      console.log(userData);
+    }else{
+      console.log('something wrong!');
+    }
     //axiosClient.defaults.headers.common['Authorization'] = userData.token;
     // history.push('/hone')
   }
@@ -81,11 +112,12 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
+            id="username"
+            label="Username"
             name="email"
-            autoComplete="email"
+            autoComplete="username"
             autoFocus
+            onChange={getUsername}
           />
           <TextField
             variant="outlined"
@@ -97,12 +129,27 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={getPassword}
           />
-          
+          <RadioGroup className={classes.childInline}  name="position" value={position} onChange={handleChange}>
+              <FormControlLabel  value="student" control={<Radio />} label="Student" />
+              <FormControlLabel  value="teacher" control={<Radio />} label="Teacher" />
+          </RadioGroup>
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={
+            <Checkbox 
+              onChange={handleChangeRememberMe} 
+              checked={rememberme}  
+              value="remember" 
+              color="primary" />}
             label="Remember me"
           />
+          {err && <Alert 
+              severity="error"
+            >
+              Username or password is wrong
+            </Alert>
+          }
           <Button
             onClick={handleLogin}
             fullWidth

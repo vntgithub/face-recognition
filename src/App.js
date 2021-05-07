@@ -2,17 +2,17 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
-import signinPage from './pages/signin.page';
-import signupPage from './pages/signup.page';
+import SignIn from './pages/signin.page';
+import SignUp from './pages/signup.page';
+import Home from './pages/home.page';
 function App() {
   return (
     <Router>
-      {document.location.pathname === '/' && <h1>Home</h1>}
       <Switch>
-        <Route exact path="/signin" component={signinPage}/>
-        <Route exact path="/signup" component={signupPage} />
+        <Route exact path="/" component={Home} />
+        <Route exact path="/signin" component={SignIn}/>
+        <Route exact path="/signup" component={SignUp} />
       </Switch>
     </Router>
   );

@@ -10,8 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 
-import studentApi from '../api/student.api';
-import teacherApi from '../api/teacher.api';
+import userApi from '../api/user.api';
 
 import './style/style.css';
 
@@ -79,15 +78,16 @@ const useStyles = makeStyles((theme) => ({
 export default function SignIn() {
   const classes = useStyles();
   const [success, setSuccess] = React.useState(false);
+  const [position, setPosition] = React.useState('student');
   const [dataForm, setDataForm] = React.useState({
     username: '',
     password: '',
     passwordConfirm: '',
     name: '',
     code: '',
-    img: ''
+    img: '',
+    isTeacher: false
   });
-  const [position, setPosition] = React.useState('student');
   const [file, setFile] = React.useState(null);
   const [srcImage, setSrcImage] = React.useState('');
   const [err, setErr] = React.useState({
@@ -102,7 +102,10 @@ export default function SignIn() {
   const regexCode = /^[a-zA-Z0-9]{5,}$/;
   const regexPassword = /[a-zA-z0-9]{8}/;
 
-  const handleChange = (event) => setPosition(event.target.value);
+  const handleChange = (event) => {
+    setPosition(event.target.value); 
+    setDataForm({...dataForm, isTeacher: event.target.value ==='teacher'});
+  };
   const getName = (event) => setDataForm({...dataForm, name: event.target.value});
   const getCode = (event) => setDataForm({...dataForm, code: event.target.value});
   const getUsername = (event) => setDataForm({...dataForm, username: event.target.value});
@@ -119,7 +122,9 @@ export default function SignIn() {
             setSrcImage(e.target.result);
         };
 
-    reader.readAsDataURL(file[0]);
+    if(file[0]){
+      reader.readAsDataURL(file[0]);
+    }
 }
   const vadlidateData = async () => {
     let check = true;
@@ -136,7 +141,7 @@ export default function SignIn() {
       check &= false;
       newErr.code = true;
     }else{
-      await studentApi.checkCode(dataForm.code)
+      await userApi.checkCode(dataForm.code)
         .then(resData => {
           //resData = false when code aldredy exist
           if(!resData){
@@ -148,38 +153,12 @@ export default function SignIn() {
             document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
           }
         })
-
-        await teacherApi.checkCode(dataForm.code)
-        .then(resData => {
-          //resData = false when code aldredy exist
-          if(!resData){
-            check &= false;
-            newErr.code = true;
-            document.getElementById('codeAlert').innerHTML = 'Code already exist';
-          }else{
-            newErr.code = false;
-            document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
-          }
-        })
-      
-
     }
     if(dataForm.username === '' || !regexPassword.test(dataForm.username)){
       check &= false;
       newErr.username = true;
     }else{
-      await studentApi.checkUsername(dataForm.username)
-      .then(resData => {
-        if(!resData){
-          check &= false;
-          newErr.username = true;
-          document.getElementById('usernameAlert').innerHTML = 'Username already exist';
-        }else{
-          newErr.username = false;
-          document.getElementById('usernameAlert').innerHTML = 'Username is require, use 8 characters or more for your username';
-        }
-      })
-      await teacherApi.checkUsername(dataForm.username)
+      await userApi.checkUsername(dataForm.username)
       .then(resData => {
         if(!resData){
           check &= false;
@@ -230,15 +209,9 @@ export default function SignIn() {
         for(let key in data){
           form.append(key, dataForm[key]);
         }
-        if(position === 'student'){
-          await studentApi.create(form)
+        await userApi.create(form)
           .then(resData => console.log(resData))
           .catch(err => console.log(err))
-        }else{
-          await teacherApi.create(form)
-          .then(resData => console.log(resData))
-          .catch(err => console.log(err))
-        }
         setSuccess(true);
 
       }

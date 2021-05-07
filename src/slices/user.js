@@ -1,27 +1,28 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import studentApi from '../api/student.api';
-import teacherApi from '../api/teacher.api';
+import userApi from '../api/user.api';
 
 
 export const login = createAsyncThunk(
     'user/login',
-    async (form) => {
-        if(form.position === 'student'){
-            const data = await studentApi.login(form.data);
-            return data;
-        }else{
-            const data = await teacherApi.login(form.data);
-            return data;
-        }
+    async (data) => {
+        const resData = await userApi.login(data);
+        return resData;
     }
 );
+export const loginByToken = createAsyncThunk(
+    'user/loginbytoken',
+    async (token) => {
+        const resData = userApi.loginByToken(token);
+        return resData;
+    }
+)
 
 
 
-export const studentSlice = createSlice({
-    name: 'student',
+export const userSlice = createSlice({
+    name: 'user',
     initialState: {
-        dataUser: {},
+        userData: {},
         loading: false,
         err: ''
     },
@@ -36,9 +37,20 @@ export const studentSlice = createSlice({
         },
         [login.fulfilled]: (state, action) => {
             state.loading = false;
-            state.dataUser = action.payload;
+            state.userData = action.payload;
+        },
+        [loginByToken.pending]: (state) => {
+            state.loading = true;
+        },
+        [loginByToken.rejected]: (state, action) => {
+            state.loading = false;
+            state.err = action.err;
+        },
+        [loginByToken.fulfilled]: (state, action) => {
+            state.loading = false;
+            state.userData = action.payload;
         }
     }
 });
 //export const { signin, signup, logout } = studentSlice.actions;
-export default studentSlice.reducer;
+export default userSlice.reducer;

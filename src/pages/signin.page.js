@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 
 import './style/style.css';
+import { useHistory } from 'react-router';
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -51,18 +52,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignIn() {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const classes = useStyles();
   const [data, setData] = useState({
     username: '',
     password: ''
   })
   const [err, setErr] = useState(false);
-  const [position, setPosition] = useState('student');
   const [rememberme, setRememberme] = useState(true);
-  const dispatch = useDispatch();
-  const classes = useStyles();
-  const handleChange = (event) => {
-    setPosition(event.target.value);
-  };
+  
+  
   const handleChangeRememberMe = () => {
     setRememberme(!rememberme);
   }
@@ -87,19 +87,22 @@ export default function SignIn() {
   const handleLogin = async() => {
     const check = validata();
     if(check){
-      const loginActionResult = await dispatch(login({data, position}));
-      const userData = unwrapResult(loginActionResult);
-      if(userData.token){
-        localStorage.setItem('token', userData.token);
+      const loginActionResult = await dispatch(login(data));
+      const resData = unwrapResult(loginActionResult);
+      if(resData.token && resData.userInformation){
+        if(rememberme)
+          localStorage.setItem('token', resData.token);
+        else
+          sessionStorage.setItem('token', resData.token);
         setErr(false);
+        history.push('/');
       }else{
         setErr(true);
       }
     }else{
       console.log('something wrong!');
     }
-    //axiosClient.defaults.headers.common['Authorization'] = userData.token;
-    // history.push('/hone')
+    
   }
   return (
     <Container component="main" maxWidth="xs">
@@ -136,10 +139,6 @@ export default function SignIn() {
             autoComplete="current-password"
             onChange={getPassword}
           />
-          <RadioGroup className={classes.childInline}  name="position" value={position} onChange={handleChange}>
-              <FormControlLabel  value="student" control={<Radio />} label="Student" />
-              <FormControlLabel  value="teacher" control={<Radio />} label="Teacher" />
-          </RadioGroup>
           <FormControlLabel
             control={
             <Checkbox 

@@ -8,12 +8,14 @@ import {
   } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
   
-  import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-  import DeleteIcon from '@material-ui/icons/Delete';
-  import Typography from '@material-ui/core/Typography';
-  import Alert from '@material-ui/lab/Alert';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
 
-  import '../pages/style/style.css';
+import '../pages/style/style.css';
+import courseApi from '../api/course.api';
+import { addCourse } from '../slices/course';
 
   const useStyles = makeStyles((theme) => ({
     paper: {
@@ -64,7 +66,7 @@ import AddIcon from '@material-ui/icons/Add';
       }
   }));
 const AddCourse = () => {
-    const idTeacher = useSelector(state => state.user.userData['_id']);
+    const id = useSelector(state => state.user.userData['_id']);
     const dispatch = useDispatch();
     const classes = useStyles();
     const [success, setSuccess] = useState(false);
@@ -72,7 +74,7 @@ const AddCourse = () => {
         name: '',
         code: '',
         lesson: [],
-        teacherId: idTeacher,
+        teacherId: '',
     })
     const [err, setErr] = React.useState({
         name: false,
@@ -97,8 +99,51 @@ const AddCourse = () => {
             setData({...data, lesson: newLessonArray});
         }
     }
-    const submit = () => {
-        setSuccess(true);
+    const vadlidateData = async () => {
+        let check = true;
+        let newErr = {...err};
+        
+        if(data.name === ''){
+          check &= false;
+          newErr.name = true;
+        }else{
+          newErr.name = false;
+        }
+          
+        if(data.code === '' || !regexCode.test(data.code)){
+          check &= false;
+          newErr.code = true;
+        }else{
+          await courseApi.checkCode(data.code)
+            .then(resData => {
+              //resData = false when code aldredy exist
+              if(!resData){
+                check &= false;
+                newErr.code = true;
+                document.getElementById('codeAlert').innerHTML = 'Code already exist';
+              }else{
+                newErr.code = false;
+                document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
+              }
+            })
+        }
+        if(data.lesson.length === 0){
+            check &= false;
+            newErr.lesson = true;
+        }else{
+            newErr.lesson = false;
+        }
+        
+        setErr(newErr);
+        return check;
+      }
+    const submit = async () => {
+        const checkFlag = vadlidateData();
+        if(checkFlag){
+          setData({...data, teacherId: id});
+          await dispatch(addCourse((data)));
+          setSuccess(true);
+        }
     }
         return(
         <Container component="main" maxWidth="sm">
@@ -179,6 +224,12 @@ const AddCourse = () => {
                         </ListItem>
                     ))}
                 </List>
+                <Alert 
+                    severity="error"
+                    className={classnames({"hidden": !(err.lesson)})}
+                >
+                    Lesson is require
+                </Alert>
                 <Button
                 onClick={submit}
                 fullWidth

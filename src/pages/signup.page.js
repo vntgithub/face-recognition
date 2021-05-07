@@ -214,7 +214,7 @@ export default function SignIn() {
         for(let key in data){
           form.append(key, dataForm[key]);
         }
-        await userApi.create(form)
+        await userApi.add(form)
           .then(resData => console.log(resData))
           .catch(err => console.log(err))
         setSuccess(true);

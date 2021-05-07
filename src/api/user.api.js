@@ -12,7 +12,7 @@ const userApi = {
         const res = await axiosClient.get(`user/checkusername/${username}`);
         return res.data;
     },
-    create: async (form) => {
+    add: async (form) => {
         const res = await axiosClient.post('user/add', form);
         return res.data;
     }, 

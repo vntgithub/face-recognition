@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 
 import {loginByToken} from '../slices/user';
 
+
 import AppBar from '../components/AppBar.component';
+import AddCourse from '../components/AddCoures.component';
 import { unwrapResult } from '@reduxjs/toolkit';
 
 const Home = () => {
@@ -28,7 +30,11 @@ const Home = () => {
         checkTokenAndSignIn();
     },[]);
     return(
-        <AppBar srcImg={srcImg} nameUser={user.name} />
+        <div>
+            <AppBar srcImg={srcImg} nameUser={user.name} isTeacher={user.isTeacher} />
+            <AddCourse />
+        </div>
+        
     )
 }
 

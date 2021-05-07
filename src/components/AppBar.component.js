@@ -8,9 +8,11 @@ import InputBase from '@material-ui/core/InputBase';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import Avatar from '@material-ui/core/Avatar';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import Icon from '@material-ui/core/Icon';
+import Avatar from '@material-ui/core/Avatar';
 import { useHistory } from 'react-router';
+import {Link} from 'react-router-dom';
 
 
 
@@ -105,9 +107,11 @@ export default function PrimarySearchAppBar(props) {
   };
   const logout = () => {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     history.push('/signin');
 
   }
+  
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -136,6 +140,13 @@ export default function PrimarySearchAppBar(props) {
       onClose={handleMobileMenuClose}
     >
       
+      {props.isTeacher&&
+      <MenuItem>
+        <IconButton aria-label="show 4 new mails" color="inherit">
+            <Icon>add_circle</Icon>
+        </IconButton>
+        <p>Add course</p>
+      </MenuItem>}
       
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -174,7 +185,11 @@ export default function PrimarySearchAppBar(props) {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-           
+            {props.isTeacher&&
+              <IconButton aria-label="Add-course" color="inherit">
+                <Icon>add_circle</Icon>
+              </IconButton>
+            }
             <IconButton
               edge="end"
               aria-label="account of current user"

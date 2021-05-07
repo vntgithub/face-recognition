@@ -5,7 +5,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 
 import {
   Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox,
-  Link, Grid, Box, Radio, RadioGroup, Typography, Container
+  Link, Grid, Box, Typography, Container
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -15,6 +15,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import './style/style.css';
 import { useHistory } from 'react-router';
+
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -52,8 +54,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignIn() {
-  const dispatch = useDispatch();
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   const history = useHistory();
+  if(token)
+    history.push('/');
+  
+  const dispatch = useDispatch();
   const classes = useStyles();
   const [data, setData] = useState({
     username: '',

@@ -13,3 +13,10 @@
     display: inline-flex !important;
     margin-left: 100px !important;
 }
+
+@media only screen and (max-width: 480px){
+    .errOnMobile{
+        width: 75%;
+        height: 75%;
+    }
+  }

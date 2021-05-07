@@ -76,11 +76,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function SignIn() {
+export default function AddCourse() {
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   const history = useHistory();
   if(token)
-    history.push('/');
+    history.push('/home');
   const classes = useStyles();
   const [success, setSuccess] = React.useState(false);
   const [position, setPosition] = React.useState('student');
@@ -233,7 +233,7 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign up
+          Add Course
         </Typography>
         <form className={classes.form} noValidate>
         <TextField

@@ -16,6 +16,7 @@ import Alert from '@material-ui/lab/Alert';
 import '../pages/style/style.css';
 import courseApi from '../api/course.api';
 import { addCourse } from '../slices/course';
+import { unwrapResult } from '@reduxjs/toolkit';
 
   const useStyles = makeStyles((theme) => ({
     paper: {
@@ -74,7 +75,7 @@ const AddCourse = () => {
         name: '',
         code: '',
         lesson: [],
-        teacherId: '',
+        teacherId: id,
     })
     const [err, setErr] = React.useState({
         name: false,
@@ -133,16 +134,18 @@ const AddCourse = () => {
         }else{
             newErr.lesson = false;
         }
-        
         setErr(newErr);
         return check;
       }
     const submit = async () => {
         const checkFlag = vadlidateData();
         if(checkFlag){
-          setData({...data, teacherId: id});
-          await dispatch(addCourse((data)));
+          const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
+          const rsData = unwrapResult(rsAddCourseAction);
+          console.log(rsData);
           setSuccess(true);
+        }else{
+          setSuccess(false);
         }
     }
         return(

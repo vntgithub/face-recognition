@@ -105,6 +105,7 @@ export default function PrimarySearchAppBar(props) {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+  
   const logout = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
@@ -186,7 +187,7 @@ export default function PrimarySearchAppBar(props) {
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             {props.isTeacher&&
-              <IconButton aria-label="Add-course" color="inherit">
+              <IconButton onClick={props.openAddCourseForm} aria-label="Add-course" color="inherit">
                 <Icon>add_circle</Icon>
               </IconButton>
             }

@@ -2,9 +2,7 @@ import axiosClient from './axiosClient';
 
 const courseApi = {
     add: async (course) => {
-        console.log(course);
         const res = await axiosClient.post('course/add', course);
-        console.log(res);
         return res.data;
     },
     get: async (teacherId) => {

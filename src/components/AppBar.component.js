@@ -12,7 +12,6 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Icon from '@material-ui/core/Icon';
 import Avatar from '@material-ui/core/Avatar';
 import { useHistory } from 'react-router';
-import {Link} from 'react-router-dom';
 
 
 

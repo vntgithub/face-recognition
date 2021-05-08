@@ -17,7 +17,6 @@ import '../pages/style/style.css';
 import courseApi from '../api/course.api';
 import { addCourse } from '../slices/course';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { PinDropSharp } from '@material-ui/icons';
 
   const useStyles = makeStyles((theme) => ({
     paper: {

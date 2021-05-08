@@ -4,14 +4,21 @@ import { useHistory } from 'react-router';
 
 import {loginByToken} from '../slices/user';
 
-
+import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '../components/AppBar.component';
 import AddCourse from '../components/AddCoures.component';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { getCourse } from '../slices/course';
-import GridCourse from '../components/GridCourse.component';
-
+import { Container } from '@material-ui/core';
+import Course from '../components/Course.component';
+const useStyles = makeStyles((theme) => ({
+    divCourse: {
+        margin: theme.spacing(3),
+        display: 'inline-table'
+    },
+  }));
 const Home = () => {
+    const classes = useStyles();
     const [srcImg, setSrcImg] = useState('');
     const history = useHistory();
     const dispatch = useDispatch();
@@ -48,7 +55,14 @@ const Home = () => {
             />
             {openAddCourse && <AddCourse setCourses={setCourses} courses={courses} />}
             {!openAddCourse &&
-                <GridCourse courses={courses} />
+                <Container maxWidth="lg">
+                    {/* <GridCourse courses={courses} /> */}
+                    {courses.map((item, index) => 
+                    <div className={classes.divCourse} key={index} >
+                        <Course course={item} />
+                    </div>
+                    )}
+                </Container>
             }
         </div>
         

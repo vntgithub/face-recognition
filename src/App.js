@@ -7,7 +7,6 @@ import SignIn from './pages/signin.page';
 import SignUp from './pages/signup.page';
 import Home from './pages/home.page';
 import EmptyPage from './pages/404.page';
-import AddCourse from "./pages/addcourse.page";
 function App() {
   return (
     <Router>

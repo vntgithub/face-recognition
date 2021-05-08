@@ -12,6 +12,9 @@ const courseApi = {
     checkCode: async (code) => {
         const res = await axiosClient.get(`course/checkcode/${code}`);
         return res.data;
+    },
+    delete: async(id) => {
+        await axiosClient.delete(`course/delete/${id}`).then(res => console.log(res.data));
     }
 }
 export default courseApi;

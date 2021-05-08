@@ -71,6 +71,7 @@ const AddCourse = (props) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const [success, setSuccess] = useState(false);
+    const [codeErrString, setCodeErrString] = useState('Code is require, use 5 characters or more for your code.');
     const [data, setData] = useState({
         name: '',
         code: '',
@@ -94,9 +95,8 @@ const AddCourse = (props) => {
     }
     const deleteLesson = (index) => {
         return function(){
-            let newLessonArray = [
-                ...data.lessons.slice(0, index), 
-                ...data.lessons.slice(index+1)];
+            let newLessonArray = [...data.lessons];
+            newLessonArray.splice(index, 1);
             setData({...data, lessons: newLessonArray});
         }
     }
@@ -121,10 +121,10 @@ const AddCourse = (props) => {
               if(!resData){
                 check &= false;
                 newErr.code = true;
-                document.getElementById('codeAlert').innerHTML = 'Code already exist';
+                setCodeErrString('Code already exist');
               }else{
                 newErr.code = false;
-                document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
+                setCodeErrString('Code is require, use 5 characters or more for your code.');
               }
             })
         }
@@ -138,7 +138,7 @@ const AddCourse = (props) => {
         return check;
       }
     const submit = async () => {
-        const checkFlag = vadlidateData();
+        const checkFlag = await vadlidateData();
         if(checkFlag){
           const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
           const rsData = unwrapResult(rsAddCourseAction);
@@ -195,7 +195,7 @@ const AddCourse = (props) => {
                     severity="error"
                     className={classnames({"hidden": !(err.code)})}
                 >
-                    Code is require, use 5 characters or more for your code.
+                    {codeErrString}
                 </Alert>
                 <TextField
                     className={classes.maxWidthInPut}

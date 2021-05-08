@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classnames from 'classnames';
 import {
   Avatar, Button, CssBaseline, TextField,
@@ -104,6 +104,10 @@ export default function SignIn() {
     position: false,
     image: false
   });
+  const [errString, setErrString] = useState({
+    username: 'Username is require, use 8 characters or more for your username',
+    code: 'Code is require, use 5 characters or more for your code.'
+  });
   const regexCode = /^[a-zA-Z0-9]{5,}$/;
   const regexPassword = /[a-zA-z0-9]{8}/;
 
@@ -152,10 +156,10 @@ export default function SignIn() {
           if(!resData){
             check &= false;
             newErr.code = true;
-            document.getElementById('codeAlert').innerHTML = 'Code already exist';
+            setErrString({...errString, code: 'Code already exist'});
           }else{
             newErr.code = false;
-            document.getElementById('codeAlert').innerHTML = 'Code is require, use 5 characters or more for your code.';
+            setErrString({...errString, code: 'Code is require, use 5 characters or more for your code.'});
           }
         })
     }
@@ -168,10 +172,10 @@ export default function SignIn() {
         if(!resData){
           check &= false;
           newErr.username = true;
-          document.getElementById('usernameAlert').innerHTML = 'Username already exist';
+          setErrString({...errString, username: 'Username already exist'});
         }else{
           newErr.username = false;
-          document.getElementById('usernameAlert').innerHTML = 'Username is require, use 8 characters or more for your username';
+          setErrString({...errString, username: 'Username is require, use 8 characters or more for your username'});
         }
       })
     }
@@ -272,7 +276,7 @@ export default function SignIn() {
             severity="error"
             className={classnames({"hidden": !(err.code)})}
           >
-            Code is require, use 5 characters or more for your code.
+            {errString.code}
           </Alert>
           <TextField
             error="true"
@@ -293,7 +297,7 @@ export default function SignIn() {
             severity="error"
             className={classnames({"hidden": !err.username})}
           >
-            Username is require, use 8 characters or more for your username
+            {errString.username}
           </Alert>
           <TextField
             variant="outlined"

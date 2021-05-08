@@ -26,6 +26,11 @@ const Home = () => {
     const [courses, setCourses] = useState([]);
     const [openAddCourse, setOpenAddcourse] = useState(false);
     const openAddCourseForm = () => setOpenAddcourse(!openAddCourse);
+    const updateArrayCourseAfterDelete = (indexWantDelete) => {
+        let newCourses = [...courses];
+        newCourses.splice(indexWantDelete, 1)
+        setCourses(newCourses);
+    }
     useEffect(() => {
         const checkTokenAndSignIn =  async () => {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -59,7 +64,7 @@ const Home = () => {
                     {/* <GridCourse courses={courses} /> */}
                     {courses.map((item, index) => 
                     <div className={classes.divCourse} key={index} >
-                        <Course course={item} />
+                        <Course index={index} course={item} updateArrayCourseAfterDelete={updateArrayCourseAfterDelete} />
                     </div>
                     )}
                 </Container>

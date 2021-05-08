@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {Grid,Paper} from '@material-ui/core';
+import {Grid} from '@material-ui/core';
 import Course from './Course.component';
 
 
@@ -27,6 +27,7 @@ export default function GridCourse(props) {
                 <Course course={item} />
             </Grid>
         )}
+        
       </Grid>
     </div>
   );

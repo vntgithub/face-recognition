@@ -46,7 +46,7 @@ const Home = () => {
             isTeacher={user.isTeacher} 
             openAddCourseForm={openAddCourseForm}
             />
-            {openAddCourse && <AddCourse />}
+            {openAddCourse && <AddCourse setCourses={setCourses} courses={courses} />}
             {!openAddCourse &&
                 <GridCourse courses={courses} />
             }

@@ -17,6 +17,7 @@ import '../pages/style/style.css';
 import courseApi from '../api/course.api';
 import { addCourse } from '../slices/course';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { PinDropSharp } from '@material-ui/icons';
 
   const useStyles = makeStyles((theme) => ({
     paper: {
@@ -66,7 +67,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
         margin: theme.spacing(2, 0, 0, 0),
       }
   }));
-const AddCourse = () => {
+const AddCourse = (props) => {
     const id = useSelector(state => state.user.userData['_id']);
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -74,7 +75,7 @@ const AddCourse = () => {
     const [data, setData] = useState({
         name: '',
         code: '',
-        lesson: [],
+        lessons: [],
         teacherId: id,
     })
     const [err, setErr] = React.useState({
@@ -89,15 +90,15 @@ const AddCourse = () => {
         const lessonName = document.getElementById('lesson').value;
         if(lessonName === '')
             return;
-        setData({...data, lesson: [...data.lesson, lessonName]});
+        setData({...data, lessons: [...data.lessons, lessonName]});
         document.getElementById('lesson').value = '';
     }
     const deleteLesson = (index) => {
         return function(){
             let newLessonArray = [
-                ...data.lesson.slice(0, index), 
-                ...data.lesson.slice(index+1)];
-            setData({...data, lesson: newLessonArray});
+                ...data.lessons.slice(0, index), 
+                ...data.lessons.slice(index+1)];
+            setData({...data, lessons: newLessonArray});
         }
     }
     const vadlidateData = async () => {
@@ -128,7 +129,7 @@ const AddCourse = () => {
               }
             })
         }
-        if(data.lesson.length === 0){
+        if(data.lessons.length === 0){
             check &= false;
             newErr.lesson = true;
         }else{
@@ -142,7 +143,7 @@ const AddCourse = () => {
         if(checkFlag){
           const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
           const rsData = unwrapResult(rsAddCourseAction);
-          console.log(rsData);
+          props.setCourses([...props.courses, rsData]);
           setSuccess(true);
         }else{
           setSuccess(false);
@@ -218,7 +219,7 @@ const AddCourse = () => {
                 </Fab>
                 <p>List lesson</p>
                 <List>
-                    {data.lesson.map((item, index) => (
+                    {data.lessons.map((item, index) => (
                         <ListItem key={index}>
                             <ListItemText primary={item}/>
                             <IconButton onClick={deleteLesson(index)} edge="end" aria-label="delete">

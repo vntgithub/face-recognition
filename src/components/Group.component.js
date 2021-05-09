@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Course(props) {
+export default function Group(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.userData);

@@ -142,7 +142,7 @@ export default function PrimarySearchAppBar(props) {
       
       {props.isTeacher&&
       <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
+        <IconButton onClick={props.openAddCourseForm} aria-label="show 4 new mails" color="inherit">
             <Icon>add_circle</Icon>
         </IconButton>
         <p>Add course</p>

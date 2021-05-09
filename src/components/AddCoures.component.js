@@ -34,8 +34,8 @@ import { unwrapResult } from '@reduxjs/toolkit';
       marginTop: theme.spacing(1),
     },
     submit: {
-      margin: theme.spacing(3, 0, 2),
-      
+      margin: theme.spacing(3, 6, 2),
+      width: 300
     },
     spaceingAndWith: {
       margin: theme.spacing(2, 4, 1, 0),
@@ -62,9 +62,12 @@ import { unwrapResult } from '@reduxjs/toolkit';
         margin: theme.spacing(2, 4, 1, 0),
         minWidth: 450
       } ,
-      marginTop: {
-        margin: theme.spacing(2, 0, 0, 0),
-      }
+    marginTop: {
+      margin: theme.spacing(2, 0, 0, 0),
+    },
+    back: {
+      margin: theme.spacing(3, 0, 2),
+    }
   }));
 const AddCourse = (props) => {
     const id = useSelector(state => state.user.userData['_id']);
@@ -235,12 +238,18 @@ const AddCourse = (props) => {
                 </Alert>
                 <Button
                 onClick={submit}
-                fullWidth
                 variant="contained"
                 color="primary"
                 className={classes.submit}
                 >
                 Add
+                </Button>
+                <Button 
+                    className={classes.back} 
+                    variant="contained"
+                    onClick={props.backAddForm}
+                    >
+                        Back
                 </Button>
             <Grid container>
                 

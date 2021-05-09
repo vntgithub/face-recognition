@@ -1,14 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
-
-import {loginByToken} from '../slices/user';
-
+import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '../components/AppBar.component';
 import AddCourse from '../components/AddCoures.component';
-import { unwrapResult } from '@reduxjs/toolkit';
-import { getCourse } from '../slices/course';
 import { Container } from '@material-ui/core';
 import Course from '../components/Course.component';
 import EditCourse from '../components/EditCourse.component';
@@ -18,17 +10,13 @@ const useStyles = makeStyles((theme) => ({
         display: 'inline-table'
     },
   }));
-const Home = () => {
+const Home = (props) => {
     const classes = useStyles();
-    const [srcImg, setSrcImg] = useState('');
-    const history = useHistory();
-    const dispatch = useDispatch();
-    const [user, setUser] = useState({});
-    const [courses, setCourses] = useState([]);
-    const [openAddCourse, setOpenAddcourse] = useState(false);
+    const { setCourses, courses, setOpenAddcourse, openAddCourse } = props;
+    
+    
     const [openEditCourse, setOpenEditcourse] = useState(false);
     const [courseWantEdit, setCourseWantEdit] = useState({});
-    const openAddCourseForm = () => setOpenAddcourse(!openAddCourse);
     const openEditCourseForm = (courseSelect, index) => {
         return () => {
             setCourseWantEdit({courseSelect, index});
@@ -36,6 +24,7 @@ const Home = () => {
         }
     }
     const back = () => setOpenEditcourse(false);
+    const backAddForm = () => setOpenAddcourse(false);
     const updateArrayCourseAfterDelete = (indexWantDelete) => {
         let newCourses = [...courses];
         newCourses.splice(indexWantDelete, 1)
@@ -48,34 +37,13 @@ const Home = () => {
         newCourses.splice(index, 1, courseNeedUpdate);
         setCourses(newCourses);
     }
-    useEffect(() => {
-        const checkTokenAndSignIn =  async () => {
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            if(token){
-                const rsLoginAction = await dispatch(loginByToken(token));
-                const data = unwrapResult(rsLoginAction);
-                setUser(data);
-                setSrcImg(data.img);
-
-                const rsGetCourseAction = await dispatch(getCourse(data['_id']));
-                const coursesArray = unwrapResult(rsGetCourseAction);
-                setCourses(coursesArray);
-    
-            }else{
-                history.push('/signin');
-            }
-        }
-        checkTokenAndSignIn();
-    },[]);
     return(
         <div>
-            <AppBar 
-            srcImg={srcImg} 
-            nameUser={user.name} 
-            isTeacher={user.isTeacher} 
-            openAddCourseForm={openAddCourseForm}
-            />
-            {openAddCourse && <AddCourse setCourses={setCourses} courses={courses} />}
+            {openAddCourse && 
+                <AddCourse 
+                    backAddForm={backAddForm} 
+                    setCourses={setCourses} 
+                    courses={courses} />}
             {openEditCourse && 
                 <EditCourse 
                     updateArrayCourseAfterEdit={updateArrayCourseAfterEdit} 
@@ -84,7 +52,6 @@ const Home = () => {
                 />}
             {!openAddCourse && !openEditCourse &&
                 <Container maxWidth="lg">
-                    {/* <GridCourse courses={courses} /> */}
                     {courses.map((item, index) => 
                     <div className={classes.divCourse} key={index} >
                         <Course 

@@ -87,7 +87,7 @@ export default function RecipeReviewCard(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={props.openEditCourseForm(props.course)}>
           <Edit />
           Edit 
         </MenuItem>

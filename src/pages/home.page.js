@@ -11,6 +11,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { getCourse } from '../slices/course';
 import { Container } from '@material-ui/core';
 import Course from '../components/Course.component';
+import EditCourse from '../components/EditCourse.component';
 const useStyles = makeStyles((theme) => ({
     divCourse: {
         margin: theme.spacing(3),
@@ -25,7 +26,15 @@ const Home = () => {
     const [user, setUser] = useState({});
     const [courses, setCourses] = useState([]);
     const [openAddCourse, setOpenAddcourse] = useState(false);
+    const [openEditCourse, setOpenEditcourse] = useState(false);
+    const [courseWantEdit, setCourseWantEdit] = useState({});
     const openAddCourseForm = () => setOpenAddcourse(!openAddCourse);
+    const openEditCourseForm = (courseSelect) => {
+        return () => {
+            setCourseWantEdit(courseSelect);
+            setOpenEditcourse(!openEditCourse)
+        }
+    }
     const updateArrayCourseAfterDelete = (indexWantDelete) => {
         let newCourses = [...courses];
         newCourses.splice(indexWantDelete, 1)
@@ -59,12 +68,23 @@ const Home = () => {
             openAddCourseForm={openAddCourseForm}
             />
             {openAddCourse && <AddCourse setCourses={setCourses} courses={courses} />}
-            {!openAddCourse &&
+            {openEditCourse && 
+                <EditCourse 
+                    setCourses={setCourses} 
+                    courses={courses}
+                    courseWantEdit={courseWantEdit}
+                />}
+            {!openAddCourse && !openEditCourse &&
                 <Container maxWidth="lg">
                     {/* <GridCourse courses={courses} /> */}
                     {courses.map((item, index) => 
                     <div className={classes.divCourse} key={index} >
-                        <Course index={index} course={item} updateArrayCourseAfterDelete={updateArrayCourseAfterDelete} />
+                        <Course 
+                            index={index} 
+                            course={item} 
+                            updateArrayCourseAfterDelete={updateArrayCourseAfterDelete} 
+                            openEditCourseForm={openEditCourseForm}
+                        />
                     </div>
                     )}
                 </Container>

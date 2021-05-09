@@ -14,9 +14,9 @@ import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 
 import '../pages/style/style.css';
-import courseApi from '../api/course.api';
-import { addCourse } from '../slices/course';
+import { updateCourse } from '../slices/course';
 import { unwrapResult } from '@reduxjs/toolkit';
+import courseApi from '../api/course.api';
 
   const useStyles = makeStyles((theme) => ({
     paper: {
@@ -34,8 +34,11 @@ import { unwrapResult } from '@reduxjs/toolkit';
       marginTop: theme.spacing(1),
     },
     submit: {
-      margin: theme.spacing(3, 0, 2),
-      
+      margin: theme.spacing(3, 6, 2),
+      width: 300
+    },
+    back: {
+        margin: theme.spacing(3, 0, 2),
     },
     spaceingAndWith: {
       margin: theme.spacing(2, 4, 1, 0),
@@ -67,12 +70,12 @@ import { unwrapResult } from '@reduxjs/toolkit';
       }
   }));
 const EditCourse = (props) => {
-    const id = useSelector(state => state.user.userData['_id']);
     const dispatch = useDispatch();
     const classes = useStyles();
     const [success, setSuccess] = useState(false);
     const [codeErrString, setCodeErrString] = useState('Code is require, use 5 characters or more for your code.');
-    const [data, setData] = useState({...props.courseWantEdit})
+    const [data, setData] = useState({...props.courseWantEdit.courseSelect})
+    const index = props.courseWantEdit.index;
     const [err, setErr] = React.useState({
         name: false,
         code: false,
@@ -110,7 +113,8 @@ const EditCourse = (props) => {
           check &= false;
           newErr.code = true;
         }else{
-          await courseApi.checkCode(data.code)
+          if(data.code !== props.courseWantEdit.courseSelect.code){
+            await courseApi.checkCode(data.code)
             .then(resData => {
               //resData = false when code aldredy exist
               if(!resData){
@@ -122,6 +126,7 @@ const EditCourse = (props) => {
                 setCodeErrString('Code is require, use 5 characters or more for your code.');
               }
             })
+          }
         }
         if(data.lessons.length === 0){
             check &= false;
@@ -135,9 +140,9 @@ const EditCourse = (props) => {
     const submit = async () => {
         const checkFlag = await vadlidateData();
         if(checkFlag){
-          const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
+          const rsAddCourseAction = await dispatch(updateCourse({course: data, index}));
           const rsData = unwrapResult(rsAddCourseAction);
-          props.setCourses([...props.courses, rsData]);
+          props.updateArrayCourseAfterEdit(rsData);
           setSuccess(true);
         }else{
           setSuccess(false);
@@ -234,12 +239,18 @@ const EditCourse = (props) => {
                 </Alert>
                 <Button
                 onClick={submit}
-                fullWidth
                 variant="contained"
                 color="primary"
                 className={classes.submit}
                 >
-                Add
+                Update
+                </Button>
+                <Button 
+                    className={classes.back} 
+                    variant="contained"
+                    onClick={props.back}
+                    >
+                        Back
                 </Button>
             <Grid container>
                 
@@ -250,6 +261,7 @@ const EditCourse = (props) => {
           >
             Course updated!
           </Alert>
+         
         </form>
       </div>
     </Container>

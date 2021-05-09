@@ -15,6 +15,10 @@ const courseApi = {
     },
     delete: async(id) => {
         await axiosClient.delete(`course/delete/${id}`).then(res => console.log(res.data));
+    },
+    update: async(course) => {
+        const res = await axiosClient.put('course/update', course)
+        console.log(res.data);
     }
 }
 export default courseApi;

@@ -56,7 +56,6 @@ export default function RecipeReviewCard(props) {
       props.updateArrayCourseAfterDelete(indexWantDelete);
     }
   };
-  
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -87,7 +86,7 @@ export default function RecipeReviewCard(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={props.openEditCourseForm(props.course)}>
+        <MenuItem onClick={props.openEditCourseForm(props.course, props.index)}>
           <Edit />
           Edit 
         </MenuItem>

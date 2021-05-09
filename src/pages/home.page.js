@@ -29,15 +29,23 @@ const Home = () => {
     const [openEditCourse, setOpenEditcourse] = useState(false);
     const [courseWantEdit, setCourseWantEdit] = useState({});
     const openAddCourseForm = () => setOpenAddcourse(!openAddCourse);
-    const openEditCourseForm = (courseSelect) => {
+    const openEditCourseForm = (courseSelect, index) => {
         return () => {
-            setCourseWantEdit(courseSelect);
-            setOpenEditcourse(!openEditCourse)
+            setCourseWantEdit({courseSelect, index});
+            setOpenEditcourse(true)
         }
     }
+    const back = () => setOpenEditcourse(false);
     const updateArrayCourseAfterDelete = (indexWantDelete) => {
         let newCourses = [...courses];
         newCourses.splice(indexWantDelete, 1)
+        setCourses(newCourses);
+    }
+    const updateArrayCourseAfterEdit = (data) => {
+        const index = data.index;
+        const courseNeedUpdate = data.course;
+        let newCourses = [...courses];
+        newCourses.splice(index, 1, courseNeedUpdate);
         setCourses(newCourses);
     }
     useEffect(() => {
@@ -70,9 +78,9 @@ const Home = () => {
             {openAddCourse && <AddCourse setCourses={setCourses} courses={courses} />}
             {openEditCourse && 
                 <EditCourse 
-                    setCourses={setCourses} 
-                    courses={courses}
+                    updateArrayCourseAfterEdit={updateArrayCourseAfterEdit} 
                     courseWantEdit={courseWantEdit}
+                    back={back}
                 />}
             {!openAddCourse && !openEditCourse &&
                 <Container maxWidth="lg">

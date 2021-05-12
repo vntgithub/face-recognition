@@ -4,19 +4,23 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
+import {IconButton, Button} from '@material-ui/core/';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import CardActions from '@material-ui/core/CardActions';
 import { red } from '@material-ui/core/colors';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Delete, Edit } from '@material-ui/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteCourse } from '../slices/course';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { useHistory } from 'react-router';
+import { getByCourseId } from '../slices/group';
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 345,
+    cursor: 'pointer'
   },
   media: {
     height: 0,
@@ -34,10 +38,11 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     backgroundColor: red[500],
-  },
+  }
 }));
 
 export default function Course(props) {
+  const history = useHistory();
   const classes = useStyles();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.userData);
@@ -56,6 +61,12 @@ export default function Course(props) {
       props.updateArrayCourseAfterDelete(indexWantDelete);
     }
   };
+  const getGroupsInCourse = (id) => {
+    return async function () {
+      await dispatch(getByCourseId(id));
+      history.push('/group');
+    }
+  }
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -105,6 +116,9 @@ export default function Course(props) {
           Number of lessons: {props.course.lessons.length}
         </Typography>
       </CardContent>
+      <CardActions>
+        <Button onClick={getGroupsInCourse(props.course['_id'])} size="small">View group</Button>
+      </CardActions>
     </Card>
   );
 }

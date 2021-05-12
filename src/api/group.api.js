@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 const groupApi = {
     getByCourseId: async (id) => {
-        const groups = await axiosClient.get('group/getbycourseid/${id');
+        const groups = await axiosClient.get(`group/getbycourseid/${id}`);
         return groups.data;
     },
     add: async (group) => {

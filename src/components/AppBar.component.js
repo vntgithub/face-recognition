@@ -12,6 +12,7 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import Icon from '@material-ui/core/Icon';
 import Avatar from '@material-ui/core/Avatar';
 import { useHistory } from 'react-router';
+import { useSelector } from 'react-redux';
 
 
 
@@ -82,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
 export default function PrimarySearchAppBar(props) {
   const history = useHistory();
   const classes = useStyles();
+  const user = useSelector(state => state.user.userData);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -140,13 +142,7 @@ export default function PrimarySearchAppBar(props) {
       onClose={handleMobileMenuClose}
     >
       
-      {props.isTeacher&&
-      <MenuItem>
-        <IconButton onClick={props.openAddCourseForm} aria-label="show 4 new mails" color="inherit">
-            <Icon>add_circle</Icon>
-        </IconButton>
-        <p>Add course</p>
-      </MenuItem>}
+      
       
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -155,7 +151,7 @@ export default function PrimarySearchAppBar(props) {
           aria-haspopup="true"
           color="inherit"
         >
-          <Avatar alt={props.nameUser} src={props.srcImg} />
+          <Avatar alt={user.name} src={user.img} />
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -185,11 +181,7 @@ export default function PrimarySearchAppBar(props) {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            {props.isTeacher&&
-              <IconButton onClick={props.openAddCourseForm} aria-label="Add-course" color="inherit">
-                <Icon>add_circle</Icon>
-              </IconButton>
-            }
+            
             <IconButton
               edge="end"
               aria-label="account of current user"
@@ -198,7 +190,7 @@ export default function PrimarySearchAppBar(props) {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <Avatar alt={props.nameUser} src={props.srcImg} />
+              <Avatar alt={user.name} src={user.img} />
             </IconButton>
           </div>
           <div className={classes.sectionMobile}>

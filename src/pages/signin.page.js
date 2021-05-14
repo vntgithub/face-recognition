@@ -53,10 +53,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SignIn(props) {
+export default function SignIn() {
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   const history = useHistory();
-  const { setShowAppBar } = props;
   if(token)
     history.push('/');
   
@@ -102,7 +101,6 @@ export default function SignIn(props) {
         else
           sessionStorage.setItem('token', resData.token);
         setErr(false);
-        setShowAppBar(true);
         history.push('/');
       }else{
         setErr(true);

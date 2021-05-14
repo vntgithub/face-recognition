@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCourse from '../components/AddCoures.component';
-import { Container } from '@material-ui/core';
+import { Container, Button } from '@material-ui/core';
 import Course from '../components/Course.component';
 import EditCourse from '../components/EditCourse.component';
 import { useDispatch } from 'react-redux';
@@ -9,19 +9,23 @@ import {loginByToken} from '../slices/user';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { getCourse } from '../slices/course';
 import { useHistory } from 'react-router';
+import AppBar from '../components/AppBar.component';
 const useStyles = makeStyles((theme) => ({
     divCourse: {
         margin: theme.spacing(3),
         display: 'inline-table'
+    },
+    divAddButton: {
+        margin: theme.spacing(3),
+        maxWidth: 345
     }
   }));
-const Home = (props) => {
+const Home = () => {
     const dispatch = useDispatch();
-    const { setUser, setSrcImg } = props;
+    const [courses, setCourses] = useState([]);
+    const [openAddCourse, setOpenAddcourse] = useState(false);
     const classes = useStyles();
     const history = useHistory();
-    const { setCourses, courses, setOpenAddcourse, openAddCourse } = props;
-    const [group, setGroup] = useState([]);
     const [openEditCourse, setOpenEditcourse] = useState(false);
     const [courseWantEdit, setCourseWantEdit] = useState({});
     const openEditCourseForm = (courseSelect, index) => {
@@ -49,11 +53,9 @@ const Home = (props) => {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             if(token){
                 const rsLoginAction = await dispatch(loginByToken(token));
-                const data = unwrapResult(rsLoginAction);
-                setUser(data);
-                setSrcImg(data.img);
+                const userData = unwrapResult(rsLoginAction);
     
-                const rsGetCourseAction = await dispatch(getCourse(data['_id']));
+                const rsGetCourseAction = await dispatch(getCourse(userData['_id']));
                 const coursesArray = unwrapResult(rsGetCourseAction);
                 setCourses(coursesArray);
     
@@ -62,9 +64,10 @@ const Home = (props) => {
             }
         }
         checkTokenAndSignIn();
-    }, [])
+    }, []);
     return(
         <div>
+            <AppBar />
             {openAddCourse && 
                 <AddCourse 
                     backAddForm={backAddForm} 
@@ -78,6 +81,9 @@ const Home = (props) => {
                 />}
             {!openAddCourse && !openEditCourse &&
                 <Container maxWidth="lg">
+                    <div className={classes.divAddButton}>
+                        <Button onClick={() => setOpenAddcourse(true)} variant="contained">Add course</Button>
+                    </div>
                     {courses.map((item, index) => 
                     <div className={classes.divCourse} key={index} >
                         <Course

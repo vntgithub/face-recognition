@@ -16,7 +16,9 @@ import { deleteCourse } from '../slices/course';
 import { unwrapResult } from '@reduxjs/toolkit';
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: 345,
+    margin: theme.spacing(2),
+    maxWidth: 250,
+    cursor: 'pointer'
   },
   media: {
     height: 0,
@@ -38,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Group(props) {
+  const { group } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user.userData);
@@ -56,12 +59,17 @@ export default function Group(props) {
       props.updateArrayCourseAfterDelete(indexWantDelete);
     }
   };
+  const getStateGroup = () => {
+    if(group.isDone)
+      return 'finished';
+    return 'unfinished'
+  }
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={
           <Avatar 
-          src={user.img}  
+          src={group.teacherImg}  
           aria-label="recipe" 
           className={classes.avatar}>
             R
@@ -76,8 +84,8 @@ export default function Group(props) {
             <MoreVertIcon />
           </IconButton>
         }
-        title={user.name}
-        subheader={user.code}
+        title={group.teacherName}
+        subheader={group.teacherCode}
       />
       <Menu
         id="simple-menu"
@@ -86,11 +94,11 @@ export default function Group(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={props.openEditCourseForm(props.course, props.index)}>
+        <MenuItem onClick={() => console.log("Edit")}>
           <Edit />
           Edit 
         </MenuItem>
-        <MenuItem onClick={handleDeleteCourse(props.course['_id'], props.index)}>
+        <MenuItem onClick={() => console.log("Edit")}>
           <Delete />
           Delete
         </MenuItem>
@@ -99,10 +107,16 @@ export default function Group(props) {
       
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          {props.course.name} ({props.course.code})
+          {group.name} {group.code}
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
-          Number of lessons: {props.course.lessons.length}
+          Year: {group.year}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          Semesber: {group.semesber}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          State: {getStateGroup()}
         </Typography>
       </CardContent>
     </Card>

@@ -37,7 +37,7 @@ export const userSlice = createSlice({
         },
         [login.fulfilled]: (state, action) => {
             state.loading = false;
-            state.userData = action.payload;
+            state.userData = action.payload.userInformation;
         },
         [loginByToken.pending]: (state) => {
             state.loading = true;

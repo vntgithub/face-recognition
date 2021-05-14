@@ -63,8 +63,7 @@ export default function Course(props) {
   };
   const getGroupsInCourse = (id) => {
     return async function () {
-      await dispatch(getByCourseId(id));
-      history.push('/group');
+      history.push(`/group/${id}`);
     }
   }
   return (

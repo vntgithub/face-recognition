@@ -8,6 +8,10 @@ const groupApi = {
     add: async (group) => {
         const res = await axiosClient.post('group/add', group);
         return res.data;
+    },
+    checkNo: async (data) => {
+        const res = await axiosClient.post('group/checkno/', data);
+        return res.data;
     }
 }
 

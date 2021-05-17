@@ -83,7 +83,9 @@ const useStyles = makeStyles((theme) => ({
 export default function PrimarySearchAppBar(props) {
   const history = useHistory();
   const classes = useStyles();
-  const user = useSelector(state => state.user.userData);
+  const user = {...useSelector(state => state.user.userData)};
+  if(window.location.pathname.lastIndexOf('/') > 1)
+    user.img = '.' + user.img
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 

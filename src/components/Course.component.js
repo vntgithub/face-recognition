@@ -16,7 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { deleteCourse } from '../slices/course';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useHistory } from 'react-router';
-import { getByCourseId } from '../slices/group';
+// import { getByCourseId } from '../slices/group';
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 345,

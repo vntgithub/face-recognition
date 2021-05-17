@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import {
     Avatar, Button, CssBaseline, TextField, IconButton,
-    Grid, Fab, Container
+    Grid, RadioGroup, FormControlLabel, Radio, InputLabel, Select, MenuItem ,Container, FormGroup
   } from '@material-ui/core';
   
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -15,6 +15,7 @@ import '../pages/style/style.css';
 import courseApi from '../api/course.api';
 import { addCourse } from '../slices/course';
 import { unwrapResult } from '@reduxjs/toolkit';
+import groupApi from '../api/group.api';
 
   const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,7 +38,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
     },
     spaceingAndWith: {
       margin: theme.spacing(2, 4, 1, 0),
-      minWidth: 285
+      minWidth: 150
     } ,
     button: {
       display: 'block',
@@ -65,76 +66,110 @@ import { unwrapResult } from '@reduxjs/toolkit';
     },
     back: {
       margin: theme.spacing(3, 0, 2),
+    },
+    formControlSelect: {
+      margin: theme.spacing(1),
+      minWidth: 80,
+    },
+  
+    inRow: {
+      flexDirection: 'row'
     }
   }));
 const AddGroup = (props) => {
-    const id = useSelector(state => state.user.userData['_id']);
+    const {idCourse, setGroups, groups} = props;
+    const teacher = useSelector(state => state.user.userData);
     const dispatch = useDispatch();
     const classes = useStyles();
+    const getFristYear = () => {
+      const d = new Date();
+      return (d.getFullYear()-1).toString() + '-' + (d.getFullYear()).toString();
+    }
+    const getLastYear = () => {
+      const d = new Date();
+      return (d.getFullYear()).toString() + '-' + (d.getFullYear() + 1).toString();
+    }
     const [success, setSuccess] = useState(false);
-    const [codeErrString, setCodeErrString] = useState('Code is require, use 5 characters or more for your code.');
+    const [semester, setSemester] = useState(1);
+    const [errNoString, setNoErrString] = useState('Numberical order is require')
     const [data, setData] = useState({
-        name: '',
-        code: '',
-        lessons: [],
-        teacherId: id,
+      no: '',
+      courseId: idCourse,
+      teacherName: teacher.name,
+      teacherCode: teacher.code,
+      teacherImg: teacher.img,
+      nameCourse: '',
+      codeCourse: '',
+      year: getFristYear(),
+      semester: 1,
+      classId: '',
+      numberOfStudent: '',
+      isDone: false
     })
-    const [err, setErr] = React.useState({
-        name: false,
-        code: false,
-        lesson: false
-      });
-    const regexCode = /^[a-zA-Z0-9]{5,}$/;
-    const getName = (e) => setData({...data, name: e.target.value});
-    const getCode = (e) => setData({...data, code: e.target.value});
+    const [err, setErr] = React.useState({numberOfStudent: false, no: false});
+    const handleChangeYear = (e) => setData({...data, year: e.target.value});
+    const getNumberOfStudent = (e) => setData({...data, numberOfStudent: parseInt(e.target.value)});
+    const getNo = (e) => setData({...data, no: parseInt(e.target.value)});
     const vadlidateData = async () => {
         let check = true;
         let newErr = {...err};
-        
-        if(data.name === ''){
+        if(data.numberOfStudent === '' || data.numberOfStudent < 0){
           check &= false;
-          newErr.name = true;
+          newErr.numberOfStudent = true;
         }else{
-          newErr.name = false;
+          newErr.numberOfStudent = false;
         }
           
-        if(data.code === '' || !regexCode.test(data.code)){
+        if(data.no === '' || data.no < 0){
           check &= false;
-          newErr.code = true;
+          newErr.no = true;
         }else{
-          await courseApi.checkCode(data.code)
+          await groupApi.checkNo({
+            no:data.no, 
+            semester: data.semester, 
+            year: data.year
+          })
             .then(resData => {
               //resData = false when code aldredy exist
               if(!resData){
                 check &= false;
-                newErr.code = true;
-                setCodeErrString('Code already exist');
+                newErr.no = true;
+                setNoErrString('Numberical order already exist');
               }else{
-                newErr.code = false;
-                setCodeErrString('Code is require, use 5 characters or more for your code.');
+                newErr.no = false;
+                setNoErrString('Numberical order is require and greater than 0');
               }
             })
-        }
-        if(data.lessons.length === 0){
-            check &= false;
-            newErr.lesson = true;
-        }else{
-            newErr.lesson = false;
         }
         setErr(newErr);
         return check;
       }
+    const handleChangeSemester = (e) => {
+      setSemester(e.target.value);
+      setData({...data, semester: e.target.value});
+    }
     const submit = async () => {
         const checkFlag = await vadlidateData();
         if(checkFlag){
-          const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
-          const rsData = unwrapResult(rsAddCourseAction);
-          props.setCourses([...props.courses, rsData]);
+          // const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
+          // const rsData = unwrapResult(rsAddCourseAction);
+          // props.setCourses([...props.courses, rsData]);
           setSuccess(true);
         }else{
           setSuccess(false);
         }
     }
+    useEffect(() => {
+      const fetchCourseOfGroupData = async () => {
+        const courseOfGroup = await courseApi.getById(idCourse);
+        setData({
+          ...data,
+          nameCourse: courseOfGroup.name,
+          codeCourse: courseOfGroup.code
+        })
+      }
+      fetchCourseOfGroupData();
+    }, [])
         return(
         <Container component="main" maxWidth="sm">
             <CssBaseline />
@@ -143,47 +178,66 @@ const AddGroup = (props) => {
                 <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                Add course
+                Add group
                 </Typography>
                 <form className={classes.form} noValidate>
-                <TextField
-                    className={classes.spaceingAndWith}
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    id="name"
-                    label="Name course"
-                    name="name"
-                    autoComplete="Name course"
-                    autoFocus
-                    error={err.name}
-                    onChange={getName}
-                />
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    id="code"
-                    label="Your code"
-                    name="code"
-                    autoComplete="Your code"
-                    autoFocus
-                    error={err.code}
-                    onChange={getCode}
-                />
-                <Alert 
+                  <TextField
+                      className={classes.spaceingAndWith}
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      id="no"
+                      label="Numerical order"
+                      autoComplete="Numerical order"
+                      autoFocus
+                      error={err.no}
+                      onChange={getNo}
+                      type="number"
+                  />
+                  <TextField
+                      className={classes.spaceingAndWith}
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      id="numberofstudent"
+                      label="Numer of student"
+                      autoComplete="Numer of student"
+                      autoFocus
+                      error={err.numberOfStudent}
+                      onChange={getNumberOfStudent}
+                      type="number"
+                  />
+                  <Alert 
                     severity="error"
-                    className={classnames({"hidden": !(err.name)})}
-                >
-                    Name  is require
-                </Alert>
-                <Alert
-                    id="codeAlert"
+                    className={classnames({"hidden": !(err.no)})}
+                  >
+                    {errNoString}
+                  </Alert>
+                  <Alert 
                     severity="error"
-                    className={classnames({"hidden": !(err.code)})}
-                >
-                    {codeErrString}
-                </Alert>
+                    className={classnames({"hidden": !(err.numberOfStudent)})}
+                  >
+                    Number of student  is require and greater than 0
+                  </Alert>
+                      <InputLabel className={classes.marginTop} id="demo-simple-select-label">Semester</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={semester}
+                        onChange={handleChangeSemester}
+                      >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                      </Select>
+                      <InputLabel className={classes.marginTop} id="demo-simple-radio-label">Year</InputLabel>
+                      <RadioGroup 
+                        labelId="demo-simple-radio-label" 
+                        className={classes.childInline} name="year" 
+                        value={data.year} onChange={handleChangeYear}>
+                        <FormControlLabel  value={getFristYear()} control={<Radio />} label={getFristYear()} />
+                        <FormControlLabel  value={getLastYear()} control={<Radio />} label={getLastYear()} />
+                      </RadioGroup>
                 <Button
                 onClick={submit}
                 variant="contained"

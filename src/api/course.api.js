@@ -19,6 +19,10 @@ const courseApi = {
     update: async(course) => {
         const res = await axiosClient.put('course/update', course)
         console.log(res.data);
+    },
+    getById: async (id) => {
+        const res = await axiosClient.get(`course/getbyid/${id}`);
+        return res.data;
     }
 }
 export default courseApi;

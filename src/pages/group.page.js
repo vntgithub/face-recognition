@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
 const GroupPage = () => {
     const dispatch = useDispatch();
     const classes = useStyles();
+    const [id, setId] = useState(0);
     const groupsInStore = useSelector(state => state.group.data)
     const [groups, setGroups] = useState(groupsInStore);
     const [openAddGroup, setOpenAddGroup] = useState(false);
@@ -27,6 +28,7 @@ const GroupPage = () => {
     useEffect(() => {
         const getGroup = async () => {
             const id = window.location.pathname.substr(7);
+            setId(id);
             const rsAction = await dispatch(getByCourseId(id));
             setGroups(unwrapResult(rsAction));
         } 
@@ -38,8 +40,9 @@ const GroupPage = () => {
             <AppBar />
             {openAddGroup && 
                 <AddGroup
+                    idCourse={id}
                     backAddForm={backAddForm} 
-                    setCourses={setGroups} 
+                    setGroups={setGroups} 
                     groups={groups} />}
             {!openAddGroup && !openEditGroup &&
                 <Container>

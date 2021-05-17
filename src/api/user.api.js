@@ -19,7 +19,6 @@ const userApi = {
     loginByToken: async (token) => {
         axiosClient.defaults.headers.common['Authorization'] = token;
         const res = await axiosClient.post('user/loginbytoken');
-        console.log(res.data);
         return res.data.userInformation;
     }
 }

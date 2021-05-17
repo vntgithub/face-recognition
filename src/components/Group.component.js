@@ -106,8 +106,12 @@ export default function Group(props) {
       </Menu>
       
       <CardContent>
+
         <Typography variant="body2" color="textSecondary" component="p">
-          {group.name} {group.code}
+          {group.nameCourse} ({group.codeCourse})
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          Numberical order: {group.no}
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
           Year: {group.year}

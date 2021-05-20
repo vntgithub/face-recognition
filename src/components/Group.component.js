@@ -11,8 +11,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { red } from '@material-ui/core/colors';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Delete, Edit } from '@material-ui/icons';
-import { useSelector, useDispatch } from 'react-redux';
-import { deleteCourse } from '../slices/course';
+import { useDispatch } from 'react-redux';
+import { deleteGroup } from '../slices/group';
 import { unwrapResult } from '@reduxjs/toolkit';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,10 +40,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Group(props) {
-  const { group } = props;
+  const { 
+      group, 
+      updateGroupsAfterDelete, 
+      index,
+      // setGroupWantEdit,
+    } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user.userData);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
@@ -52,13 +56,15 @@ export default function Group(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleDeleteCourse = (id, index) => {
+  const handleDeleteGroup = (id, index) => {
     return async function () {
-      const rsDeleteCourseAction = await dispatch(deleteCourse({id, index}));
-      const indexWantDelete = unwrapResult(rsDeleteCourseAction);
-      props.updateArrayCourseAfterDelete(indexWantDelete);
+      await dispatch(deleteGroup({id, index}));
+      updateGroupsAfterDelete(index);
     }
   };
+  const handleEditGroup = (index, group) => {
+
+  }
   const getStateGroup = () => {
     if(group.isDone)
       return 'finished';
@@ -94,11 +100,11 @@ export default function Group(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={() => console.log("Edit")}>
+        <MenuItem onClick={handleEditGroup(index, group)}>
           <Edit />
           Edit 
         </MenuItem>
-        <MenuItem onClick={() => console.log("Edit")}>
+        <MenuItem onClick={handleDeleteGroup(group['_id'], index)}>
           <Delete />
           Delete
         </MenuItem>
@@ -117,7 +123,7 @@ export default function Group(props) {
           Year: {group.year}
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
-          Semesber: {group.semesber}
+          Semesber: {group.semester}
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
           State: {getStateGroup()}

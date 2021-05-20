@@ -12,7 +12,10 @@ const groupApi = {
     checkNo: async (data) => {
         const res = await axiosClient.post('group/checkno/', data);
         return res.data;
-    }
+    }, 
+    delete: async (id) => {
+        await axiosClient.delete(`group/delete/${id}`);
+    } 
 }
 
 export default groupApi;

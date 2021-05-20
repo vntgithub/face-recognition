@@ -13,7 +13,7 @@ import Alert from '@material-ui/lab/Alert';
 
 import '../pages/style/style.css';
 import courseApi from '../api/course.api';
-import { addCourse } from '../slices/course';
+import { addGroup } from '../slices/group';
 import { unwrapResult } from '@reduxjs/toolkit';
 import groupApi from '../api/group.api';
 
@@ -152,8 +152,9 @@ const AddGroup = (props) => {
         const checkFlag = await vadlidateData();
         if(checkFlag){
           // const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
-          // const rsData = unwrapResult(rsAddCourseAction);
-          // props.setCourses([...props.courses, rsData]);
+          const rsAddGroupAction = await dispatch(addGroup(data))
+          const rsData = unwrapResult(rsAddGroupAction);
+          setGroups([...groups, rsData]);
           setSuccess(true);
         }else{
           setSuccess(false);

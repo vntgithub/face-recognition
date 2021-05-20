@@ -5,6 +5,7 @@ import Group from '../components/Group.component';
 import { Container, Button } from '@material-ui/core';
 import AppBar from '../components/AppBar.component';
 import AddGroup from '../components/AddGroup.component';
+import EditGroup from '../components/EditGroup.component';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { getByCourseId } from '../slices/group'
 const useStyles = makeStyles((theme) => ({
@@ -13,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'inline-table'
     },
     divAddButton: {
-        margin: theme.spacing(3),
+        margin: theme.spacing(3,3,3,0),
         maxWidth: 345
     }
   }));
@@ -35,6 +36,17 @@ const GroupPage = () => {
         getGroup();
     }, [])
     const backAddForm = () => setOpenAddGroup(false);
+    const updateGroupsAfterDelete = (index) => {
+        let newGroups = [...groups];
+        newGroups.splice(index, 1);
+        setGroups(newGroups);
+    }
+    const updateGroupsAfterEdit = (groupNeedEdit, index) => {
+        let newGroups = [...groups];
+        newGroups.splice(index, 1, groupNeedEdit);
+        setGroups(newGroups);
+    }
+    const backEditForm = () => setOpenEditGroup(false);
     return (
         <div>
             <AppBar />
@@ -44,14 +56,28 @@ const GroupPage = () => {
                     backAddForm={backAddForm} 
                     setGroups={setGroups} 
                     groups={groups} />}
+            {/* {openEditGroup && 
+                <EditGroup 
+                    group={groupWantEdit}
+                    updateGroupsAfterEdit={updateGroupsAfterEdit}
+                    index={setIndexWantEdit}
+                    back={backEditForm}
+                />
+            } */}
             {!openAddGroup && !openEditGroup &&
                 <Container>
                  <div className={classes.divAddButton}>
                     <Button onClick={() => setOpenAddGroup(true)} variant="contained">Add group</Button>
                 </div>
                 {groups.map((item, index) => 
-                    <div className={classes.divGroup}>
-                        <Group key={index} group={item} />
+                    <div key={index} className={classes.divGroup}>
+                        <Group 
+                            // setIndexWantEdit={setIndexWantEdit}
+                            // setGroupWantEdit={setOpenEditGroup}
+                            index={index}
+                            group={item} 
+                            updateGroupsAfterDelete={updateGroupsAfterDelete}
+                            />
                     </div>
                 )}
             </Container>}

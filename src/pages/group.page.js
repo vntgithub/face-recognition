@@ -29,7 +29,7 @@ const GroupPage = () => {
     const [openEditGroup, setOpenEditGroup] = useState(false);
     useEffect(() => {
         const getGroup = async () => {
-            const id = window.location.pathname.substr(7);
+            const id = localStorage.getItem('idCourse');
             setId(id);
             const rsAction = await dispatch(getByCourseId(id));
             setGroups(unwrapResult(rsAction));

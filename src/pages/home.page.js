@@ -8,6 +8,7 @@ import EditCourse from '../components/EditCourse.component';
 
 import AppBar from '../components/AppBar.component';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
     divCourse: {
         margin: theme.spacing(3),
@@ -19,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 const Home = () => {
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    if(!token)
+        history.push('/signin');
+    const history = useHistory();
     const coursesInStore = useSelector(state => state.course.data);
     const [courses, setCourses] = useState([]);
     const [openAddCourse, setOpenAddcourse] = useState(false);

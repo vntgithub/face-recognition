@@ -125,6 +125,7 @@ const AddGroup = (props) => {
           newErr.no = true;
         }else{
           await groupApi.checkNo({
+            courseId: data.courseId,
             no:data.no, 
             semester: data.semester, 
             year: data.year

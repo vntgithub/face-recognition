@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
+      cursor: 'pointer'
     },
   },
   search: {
@@ -77,15 +78,13 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
-  },
+  }
 }));
 
 export default function PrimarySearchAppBar(props) {
   const history = useHistory();
   const classes = useStyles();
   const user = {...useSelector(state => state.user.userData)};
-  // if(window.location.pathname.lastIndexOf('/') > 1)
-  //   user.img = '.' + user.img
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -165,7 +164,7 @@ export default function PrimarySearchAppBar(props) {
       <AppBar position="static">
         <Toolbar>
           
-          <Typography className={classes.title} variant="h6" noWrap>
+          <Typography onClick={() => history.push('/')} className={classes.title} variant="h6" noWrap>
             Face Recognition
           </Typography>
           <div className={classes.search}>

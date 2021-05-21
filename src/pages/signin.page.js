@@ -10,6 +10,7 @@ import {
 import Alert from '@material-ui/lab/Alert';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
+import { getCourse } from '../slices/course';
 
 
 
@@ -100,6 +101,8 @@ export default function SignIn() {
           localStorage.setItem('token', resData.token);
         else
           sessionStorage.setItem('token', resData.token);
+
+        await dispatch(getCourse(resData.userInformation['_id']));
         setErr(false);
         history.push('/');
       }else{

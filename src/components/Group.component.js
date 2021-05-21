@@ -8,17 +8,17 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { CardActions, Button } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Delete, Edit } from '@material-ui/icons';
 import { useDispatch } from 'react-redux';
 import { deleteGroup } from '../slices/group';
-import { unwrapResult } from '@reduxjs/toolkit';
+import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2),
-    maxWidth: 250,
-    cursor: 'pointer'
+    maxWidth: 250
   },
   media: {
     height: 0,
@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Group(props) {
+  const history = useHistory();
   const { 
       group, 
       updateGroupsAfterDelete, 
@@ -74,6 +75,9 @@ export default function Group(props) {
     if(group.isDone)
       return 'finished';
     return 'unfinished'
+  }
+  const viewListLesson = () => {
+    history.push('/group/lesson');
   }
   return (
     <Card className={classes.root}>
@@ -137,6 +141,9 @@ export default function Group(props) {
           State: {getStateGroup()}
         </Typography>
       </CardContent>
+      <CardActions>
+        <Button onClick={viewListLesson} size="small">View list lesson</Button>
+      </CardActions>
     </Card>
   );
 }

@@ -44,7 +44,8 @@ export default function Group(props) {
       group, 
       updateGroupsAfterDelete, 
       index,
-      // setGroupWantEdit,
+      setIndexWantEdit,
+      setOpenEditGroup
     } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -62,9 +63,13 @@ export default function Group(props) {
       updateGroupsAfterDelete(index);
     }
   };
-  const handleEditGroup = (index, group) => {
-
-  }
+  const handleEditGroup = (index) => {
+    return function () {
+      setIndexWantEdit(index);
+      setOpenEditGroup(true);
+    }
+  };
+  
   const getStateGroup = () => {
     if(group.isDone)
       return 'finished';
@@ -100,7 +105,7 @@ export default function Group(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleEditGroup(index, group)}>
+        <MenuItem onClick={handleEditGroup(index)}>
           <Edit />
           Edit 
         </MenuItem>
@@ -124,6 +129,9 @@ export default function Group(props) {
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
           Semesber: {group.semester}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          Number of student: {group.numberOfStudent}
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
           State: {getStateGroup()}

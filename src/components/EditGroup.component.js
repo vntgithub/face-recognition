@@ -12,9 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 
 import '../pages/style/style.css';
-import courseApi from '../api/course.api';
-import { addGroup } from '../slices/group';
-import { unwrapResult } from '@reduxjs/toolkit';
+import { updateGroup } from '../slices/group';
 import groupApi from '../api/group.api';
 
   const useStyles = makeStyles((theme) => ({
@@ -76,23 +74,22 @@ import groupApi from '../api/group.api';
       flexDirection: 'row'
     }
   }));
+  const getFristYear = () => {
+    const d = new Date();
+    return (d.getFullYear()-1).toString() + '-' + (d.getFullYear()).toString();
+  }
+  const getLastYear = () => {
+    const d = new Date();
+    return (d.getFullYear()).toString() + '-' + (d.getFullYear() + 1).toString();
+  }
 const EditGroup = (props) => {
-    const {group, updateGroupsAfterEdit} = props;
+    const {group, updateGroupsAfterEdit, backEditForm, index} = props;
     const dispatch = useDispatch();
     const classes = useStyles();
-    const getFristYear = () => {
-      const d = new Date();
-      return (d.getFullYear()-1).toString() + '-' + (d.getFullYear()).toString();
-    }
-    const getLastYear = () => {
-      const d = new Date();
-      return (d.getFullYear()).toString() + '-' + (d.getFullYear() + 1).toString();
-    }
     const [success, setSuccess] = useState(false);
-    const [semester, setSemester] = useState(1);
-    const [errNoString, setNoErrString] = useState('Numberical order is require')
-    const [data, setData] = useState({...group})
-    const [err, setErr] = React.useState({numberOfStudent: false, no: false});
+    const [errNoString, setNoErrString] = useState('Numberical order is require');
+    const [data, setData] = useState({...group});
+    const [err, setErr] = useState({numberOfStudent: false, no: false});
     const handleChangeYear = (e) => setData({...data, year: e.target.value});
     const getNumberOfStudent = (e) => setData({...data, numberOfStudent: parseInt(e.target.value)});
     const getNo = (e) => setData({...data, no: parseInt(e.target.value)});
@@ -110,45 +107,42 @@ const EditGroup = (props) => {
           check &= false;
           newErr.no = true;
         }else{
-          await groupApi.checkNo({
-            no:data.no, 
-            semester: data.semester, 
-            year: data.year
-          })
-            .then(resData => {
-              //resData = false when code aldredy exist
-              if(!resData){
-                check &= false;
-                newErr.no = true;
-                setNoErrString('Numberical order already exist');
-              }else{
-                newErr.no = false;
-                setNoErrString('Numberical order is require and greater than 0');
-              }
+          if(data.no !== group.no){
+            await groupApi.checkNo({
+              no:data.no, 
+              semester: data.semester, 
+              year: data.year
             })
+              .then(resData => {
+                //resData = false when code aldredy exist
+                if(!resData){
+                  check &= false;
+                  newErr.no = true;
+                  setNoErrString('Numberical order already exist');
+                }else{
+                  newErr.no = false;
+                  setNoErrString('Numberical order is require and greater than 0');
+                }
+              })
+          }else{
+            newErr.no = false;
+            setNoErrString('Numberical order is require and greater than 0');
+          }
         }
         setErr(newErr);
         return check;
       }
-    const handleChangeSemester = (e) => {
-      setSemester(e.target.value);
-      setData({...data, semester: e.target.value});
-    }
+    const handleChangeSemester = (e) => setData({...data, semester: e.target.value});
     const submit = async () => {
         const checkFlag = await vadlidateData();
         if(checkFlag){
-        //   // const rsAddCourseAction = await dispatch(addCourse(({...data, teacherId: id})));
-        //   const rsAddGroupAction = await dispatch(addGroup(data))
-        //   const rsData = unwrapResult(rsAddGroupAction);
-        //   setGroups([...groups, rsData]);
+          await dispatch(updateGroup({data, index}));
+          updateGroupsAfterEdit(data, index);
           setSuccess(true);
         }else{
           setSuccess(false);
         }
     }
-    useEffect(() => {
-      document.getElementById('no').value = 3;
-    }, [])
         return(
         <Container component="main" maxWidth="sm">
             <CssBaseline />
@@ -172,6 +166,7 @@ const EditGroup = (props) => {
                       error={err.no}
                       onChange={getNo}
                       type="number"
+                      value={data.no}
                   />
                   <TextField
                       className={classes.spaceingAndWith}
@@ -185,6 +180,7 @@ const EditGroup = (props) => {
                       error={err.numberOfStudent}
                       onChange={getNumberOfStudent}
                       type="number"
+                      value={data.numberOfStudent}
                   />
                   <Alert 
                     severity="error"
@@ -202,7 +198,7 @@ const EditGroup = (props) => {
                       <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={semester}
+                        value={data.semester}
                         onChange={handleChangeSemester}
                       >
                         <MenuItem value={1}>1</MenuItem>
@@ -223,12 +219,12 @@ const EditGroup = (props) => {
                 color="primary"
                 className={classes.submit}
                 >
-                Add
+                Update
                 </Button>
                 <Button 
                     className={classes.back} 
                     variant="contained"
-                    onClick={props.backAddForm}
+                    onClick={backEditForm}
                     >
                         Back
                 </Button>
@@ -239,7 +235,7 @@ const EditGroup = (props) => {
             severity="success"
             className={classnames({"alertSuccess": true, "hidden": !success})}  
           >
-            Group added!
+            Group updated!
           </Alert>
         </form>
       </div>

@@ -15,7 +15,10 @@ const groupApi = {
     }, 
     delete: async (id) => {
         await axiosClient.delete(`group/delete/${id}`);
-    } 
+    },
+    update: async (group) => {
+        await axiosClient.put('group/update', group);
+    }
 }
 
 export default groupApi;

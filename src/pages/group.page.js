@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'inline-table'
     },
     divAddButton: {
-        margin: theme.spacing(3,3,3,0),
+        margin: theme.spacing(4,5),
         maxWidth: 345
     }
   }));
@@ -24,6 +24,7 @@ const GroupPage = () => {
     const [id, setId] = useState(0);
     const groupsInStore = useSelector(state => state.group.data)
     const [groups, setGroups] = useState(groupsInStore);
+    const [indexWantEdit, setIndexWantEdit] = useState(-1);
     const [openAddGroup, setOpenAddGroup] = useState(false);
     const [openEditGroup, setOpenEditGroup] = useState(false);
     useEffect(() => {
@@ -56,14 +57,14 @@ const GroupPage = () => {
                     backAddForm={backAddForm} 
                     setGroups={setGroups} 
                     groups={groups} />}
-            {/* {openEditGroup && 
+            {openEditGroup && 
                 <EditGroup 
-                    group={groupWantEdit}
+                    group={groups[indexWantEdit]}
                     updateGroupsAfterEdit={updateGroupsAfterEdit}
-                    index={setIndexWantEdit}
-                    back={backEditForm}
+                    index={indexWantEdit}
+                    backEditForm={backEditForm}
                 />
-            } */}
+            }
             {!openAddGroup && !openEditGroup &&
                 <Container>
                  <div className={classes.divAddButton}>
@@ -72,8 +73,8 @@ const GroupPage = () => {
                 {groups.map((item, index) => 
                     <div key={index} className={classes.divGroup}>
                         <Group 
-                            // setIndexWantEdit={setIndexWantEdit}
-                            // setGroupWantEdit={setOpenEditGroup}
+                            setOpenEditGroup={setOpenEditGroup}
+                            setIndexWantEdit={setIndexWantEdit}
                             index={index}
                             group={item} 
                             updateGroupsAfterDelete={updateGroupsAfterDelete}

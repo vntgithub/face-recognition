@@ -21,6 +21,13 @@ export const deleteGroup = createAsyncThunk(
         await groupApi.delete(data.id);
         return data.index;
     }
+);
+export const updateGroup = createAsyncThunk(
+    'updateGroup',
+    async (data) => {
+        await groupApi.update(data.group);
+        return data;
+    }
 )
 export const groupSlice = createSlice({
     name: 'group',
@@ -43,7 +50,14 @@ export const groupSlice = createSlice({
             const index = action.payload;
             let newGroups = [...state.data];
             newGroups.splice(index, 1);
-            state = newGroups;
+            state.data = newGroups;
+        },
+        [updateGroup.fulfilled]: (state, action) => {
+            const index = action.payload.index;
+            const grourpUpdated = action.payload.group;
+            let newGroups = [...state.data];
+            newGroups.splice(index, 1, grourpUpdated);
+            state.data = newGroups;
         }
     } 
 });

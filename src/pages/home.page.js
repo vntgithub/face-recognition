@@ -24,10 +24,10 @@ const Home = () => {
     if(!token)
         history.push('/signin');
     const history = useHistory();
+    const classes = useStyles();
     const coursesInStore = useSelector(state => state.course.data);
     const [courses, setCourses] = useState([]);
     const [openAddCourse, setOpenAddcourse] = useState(false);
-    const classes = useStyles();
     const [openEditCourse, setOpenEditcourse] = useState(false);
     const [courseWantEdit, setCourseWantEdit] = useState({});
     const openEditCourseForm = (courseSelect, index) => {

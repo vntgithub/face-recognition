@@ -18,6 +18,10 @@ const groupApi = {
     },
     update: async (group) => {
         await axiosClient.put('group/update', group);
+    },
+    getById: async (id) => {
+        const res = await axiosClient.get(`group/getbyid/${id}`);
+        return res.data;
     }
 }
 

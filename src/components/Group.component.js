@@ -77,6 +77,7 @@ export default function Group(props) {
     return 'unfinished'
   }
   const viewListLesson = () => {
+    localStorage.setItem('idGroup', group['_id']);
     history.push('/group/lesson');
   }
   return (

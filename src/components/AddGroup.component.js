@@ -91,7 +91,7 @@ const AddGroup = (props) => {
     }
     const [success, setSuccess] = useState(false);
     const [semester, setSemester] = useState(1);
-    const [errNoString, setNoErrString] = useState('Numberical order is require')
+    const [errNoString, setNoErrString] = useState('Numberical order is require');
     const [data, setData] = useState({
       no: '',
       courseId: idCourse,
@@ -100,6 +100,7 @@ const AddGroup = (props) => {
       teacherImg: teacher.img,
       nameCourse: '',
       codeCourse: '',
+      lessons: [],
       year: getFristYear(),
       semester: 1,
       classId: '',
@@ -164,10 +165,12 @@ const AddGroup = (props) => {
     useEffect(() => {
       const fetchCourseOfGroupData = async () => {
         const courseOfGroup = await courseApi.getById(idCourse);
+        let listLesson = courseOfGroup.lessons.map(item => ({name: item, isDone: false}));
         setData({
           ...data,
           nameCourse: courseOfGroup.name,
-          codeCourse: courseOfGroup.code
+          codeCourse: courseOfGroup.code,
+          lessons: listLesson
         })
       }
       fetchCourseOfGroupData();

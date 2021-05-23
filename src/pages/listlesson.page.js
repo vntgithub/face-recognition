@@ -1,7 +1,7 @@
 import AppBar from '../components/AppBar.component';
 import { 
   Container, TableContainer, Table, Paper,
-  TableHead, TableRow, TableCell, TableBody
+  TableHead, TableRow, TableCell, TableBody, Button
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
@@ -17,6 +17,12 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
   },
+  textColorRed: {
+    color: 'red'
+  },
+  textColorGreen: {
+    color: 'green'
+  }
   
 }));
 export default function ListLessonPage() {
@@ -41,7 +47,7 @@ export default function ListLessonPage() {
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell align="right">Done</TableCell>
-                <TableCell align="right">Start</TableCell>
+                <TableCell align="center">Start</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -50,18 +56,28 @@ export default function ListLessonPage() {
               <TableCell component="th" scope="row">
                 {item.name}
               </TableCell>
-              <TableCell align="right">{item.isDone ? 'true' : 'false'}</TableCell>
-              <TableCell align="right">Button</TableCell>
+              <TableCell 
+                align="right"
+                className={item.isDone ? classes.textColorGreen : classes.textColorRed}
+                >
+                  {item.isDone ? 'true' : 'false'}
+                </TableCell>
+              <TableCell align="center">
+                {!item.isDone ? 
+                <Button variant="contained" color="primary">
+                  Start
+                </Button>  
+                :
+                <Button variant="contained" disabled>
+                  Start
+                </Button>
+              }
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
           </Table>
         </TableContainer>
-        {/* <List component="nav" aria-label="main mailbox folders">
-            {groupSelected.lessons.map((item, index) => 
-              <ListItem key={index}>{item.name}</ListItem>
-            )}
-        </List> */}
       </Container>
     </div>
   );

@@ -103,6 +103,7 @@ export default function SignIn() {
           sessionStorage.setItem('token', resData.token);
 
         await dispatch(getCourse(resData.userInformation['_id']));
+        localStorage.setItem('isTeacher', resData.userInformation.isTeacher);
         setErr(false);
         history.push('/');
       }else{

@@ -9,10 +9,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import Icon from '@material-ui/core/Icon';
+import {find} from '../slices/group';
 import Avatar from '@material-ui/core/Avatar';
 import { useHistory } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 
 
@@ -82,8 +83,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PrimarySearchAppBar(props) {
+  const { setGroups } = props;
   const history = useHistory();
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const link = props.titleLink || '/';
   const user = {...useSelector(state => state.user.userData)};
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -107,7 +111,14 @@ export default function PrimarySearchAppBar(props) {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-  
+  const handleSearch = async (event) => {
+    const searchString = event.target.value;
+    if(event.keyCode === 13 && searchString !== ''){
+      const rsAction = await dispatch(find(searchString));
+      const data = unwrapResult(rsAction);
+      setGroups(data);
+    }
+  }
   const logout = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
@@ -164,7 +175,7 @@ export default function PrimarySearchAppBar(props) {
       <AppBar position="static">
         <Toolbar>
           
-          <Typography onClick={() => history.push('/')} className={classes.title} variant="h6" noWrap>
+          <Typography onClick={() => history.push(link)} className={classes.title} variant="h6" noWrap>
             Face Recognition
           </Typography>
           <div className={classes.search}>
@@ -172,6 +183,7 @@ export default function PrimarySearchAppBar(props) {
               <SearchIcon />
             </div>
             <InputBase
+              onKeyDown={handleSearch}
               placeholder="Search…"
               classes={{
                 root: classes.inputRoot,

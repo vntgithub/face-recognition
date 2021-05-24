@@ -14,6 +14,7 @@ import userApi from '../api/user.api';
 
 import './style/style.css';
 import { useHistory } from 'react-router';
+import student_groupApi from '../api/student_group.api';
 
 
 
@@ -218,9 +219,10 @@ export default function SignIn() {
         for(let key in data){
           form.append(key, dataForm[key]);
         }
-        await userApi.add(form)
-          .then(resData => console.log(resData))
-          .catch(err => console.log(err))
+        const idrs = await userApi.add(form)
+        if(position === 'student')
+          await student_groupApi.add(idrs);
+
         setSuccess(true);
 
       }

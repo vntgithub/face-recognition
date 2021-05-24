@@ -22,6 +22,10 @@ const groupApi = {
     getById: async (id) => {
         const res = await axiosClient.get(`group/getbyid/${id}`);
         return res.data;
+    },
+    find: async (str) => {
+        const res = await axiosClient.get(`group/findbycode/${str}`);
+        return res.data;
     }
 }
 

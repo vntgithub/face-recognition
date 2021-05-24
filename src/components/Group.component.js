@@ -12,9 +12,11 @@ import { CardActions, Button } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { Delete, Edit } from '@material-ui/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteGroup } from '../slices/group';
 import { useHistory } from 'react-router';
+import classApi from '../api/class.api';
+import student_groupApi from '../api/student_group.api';
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2),
@@ -41,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Group(props) {
   const history = useHistory();
+  const studentId = useSelector(state => state.user.userData['_id']);
   const { 
       group, 
       updateGroupsAfterDelete, 
@@ -79,6 +82,13 @@ export default function Group(props) {
   const viewListLesson = () => {
     localStorage.setItem('idGroup', group['_id']);
     history.push('/group/lesson');
+  }
+  const joinGroup = (data) => {
+    const {classId, groupId} = data;
+    return async () => {
+      await classApi.join(studentId, classId);
+      await student_groupApi.join({studentId, groupId});
+    }
   }
   return (
     <Card className={classes.root}>
@@ -142,9 +152,14 @@ export default function Group(props) {
           State: {getStateGroup()}
         </Typography>
       </CardContent>
-      <CardActions>
+      {localStorage.getItem('isTeacher') === 'true' &&
+        <CardActions>
         <Button onClick={viewListLesson} size="small">View list lesson</Button>
-      </CardActions>
+      </CardActions>}
+      {localStorage.getItem('isTeacher') === 'false' &&
+        <CardActions>
+        <Button color="primary" onClick={joinGroup({classId: group.classId, groupId: group['_id']})} size="small">Join group</Button>
+      </CardActions>}
     </Card>
   );
 }

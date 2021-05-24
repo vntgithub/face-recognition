@@ -6,6 +6,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
 import groupApi from '../api/group.api';
+import { useHistory } from 'react-router';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,9 +27,11 @@ const useStyles = makeStyles((theme) => ({
   
 }));
 export default function ListLessonPage() {
+  const history = useHistory();
   const classes = useStyles();
   const idGroup = localStorage.getItem('idGroup');
   const [groupSelected, setGroupSelected] = useState({lessons: []});
+  const startLesson = () => history.push('/face-recognition');
   useEffect(() => {
     const fetch = async () => {
       const data = await groupApi.getById(idGroup);
@@ -64,7 +67,7 @@ export default function ListLessonPage() {
                 </TableCell>
               <TableCell align="center">
                 {!item.isDone ? 
-                <Button variant="contained" color="primary">
+                <Button onClick={startLesson} variant="contained" color="primary">
                   Start
                 </Button>  
                 :

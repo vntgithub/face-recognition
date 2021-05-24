@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import classApi from '../api/class.api';
 import groupApi from '../api/group.api';
+import student_groupApi from '../api/student_group.api';
 
 export const getByCourseId = createAsyncThunk(
     'group/getbycourseid',
@@ -28,17 +30,28 @@ export const updateGroup = createAsyncThunk(
         await groupApi.update(data.group);
         return data;
     }
+);
+export const getGroupByStudentId = createAsyncThunk(
+    'getGroupByStudentId',
+    async (studentId) => {
+        const rs = await student_groupApi.getByStudentId(studentId);
+        return rs;
+    }
 )
+export const find = createAsyncThunk(
+    'find',
+    async (str) => {
+        const rs = await groupApi.find(str);
+        return rs;
+    }
+)
+
 export const groupSlice = createSlice({
     name: 'group',
     initialState: {
         data: []    
     },
-    reducer: {
-        // selectGroupWantEdit: (state, action) => {
-        //     state.groupWantEdit = action.payload;
-        // }
-    },
+    reducer: {},
     extraReducers: {
         [getByCourseId.fulfilled]: (state, action) => {
             state.data = action.payload;
@@ -58,6 +71,12 @@ export const groupSlice = createSlice({
             let newGroups = [...state.data];
             newGroups.splice(index, 1, grourpUpdated);
             state.data = newGroups;
+        },
+        [getGroupByStudentId.fulfilled]: (state, action) => {
+            state.data = action.payload;
+        },
+        [find.fulfilled]: (state, action) => {
+            state.data = action.payload;
         }
     } 
 });

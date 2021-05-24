@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Group from '../components/Group.component';
 import { Container, Button } from '@material-ui/core';
+import AppBar from '../components/AppBar.component';
 import AddGroup from '../components/AddGroup.component';
 import EditGroup from '../components/EditGroup.component';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -17,12 +18,12 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 345
     }
   }));
-const GroupsView = () => {
+const StudentHome = () => {
+    const { groups, setGroups } = props;
     const dispatch = useDispatch();
     const classes = useStyles();
     const [id, setId] = useState(0);
     const groupsInStore = useSelector(state => state.group.data)
-    const [groups, setGroups] = useState(groupsInStore);
     const [indexWantEdit, setIndexWantEdit] = useState(-1);
     const [openAddGroup, setOpenAddGroup] = useState(false);
     const [openEditGroup, setOpenEditGroup] = useState(false);
@@ -49,6 +50,7 @@ const GroupsView = () => {
     const backEditForm = () => setOpenEditGroup(false);
     return (
         <div>
+            <AppBar />
             {openAddGroup && 
                 <AddGroup
                     idCourse={id}
@@ -84,4 +86,4 @@ const GroupsView = () => {
     )
 }
 
-export default GroupsView;
+export default StudentHome;

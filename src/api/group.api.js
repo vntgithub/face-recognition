@@ -5,6 +5,12 @@ const groupApi = {
         const groups = await axiosClient.get(`group/getbycourseid/${id}`);
         return groups.data;
     },
+    getByArrayId: async (arr) => {
+        console.log(arr);
+        const res = await axiosClient.post('group/getbyarrayid', arr);
+        console.log(res.data)
+        return res.data;
+    },
     add: async (group) => {
         const res = await axiosClient.post('group/add', group);
         return res.data;

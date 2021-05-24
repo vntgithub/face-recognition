@@ -35,7 +35,8 @@ export const getGroupByStudentId = createAsyncThunk(
     'getGroupByStudentId',
     async (studentId) => {
         const rs = await student_groupApi.getByStudentId(studentId);
-        return rs;
+        const rs2 = await groupApi.getByArrayId(rs);
+        return rs2;
     }
 )
 export const find = createAsyncThunk(

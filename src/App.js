@@ -19,19 +19,15 @@ import FaceRecognitionPage from "./pages/face-reacognition.page";
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
-    const getGroup = async (userId) => {
-      await dispatch(getGroupByStudentId(userId));
-   }
     const checkTokenAndSignIn =  async () => {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         if(token){
             const rsAction = await dispatch(loginByToken(token));
             const userData = unwrapResult(rsAction);
-            const studentId = userData['_id'];
             if(!userData.isTeacher)
-              getGroup(studentId);
+              await dispatch(getGroupByStudentId(userData['_id']))
             else
-            await dispatch(getCourse(userData['_id']));
+              await dispatch(getCourse(userData['_id']));
         }
     }
     

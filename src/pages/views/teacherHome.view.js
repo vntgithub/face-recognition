@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCourse from '../../components/AddCoures.component';
 import { Container, Button } from '@material-ui/core';
@@ -6,7 +6,6 @@ import Course from '../../components/Course.component';
 import EditCourse from '../../components/EditCourse.component';
 
 
-import { useSelector } from 'react-redux';
 const useStyles = makeStyles((theme) => ({
     divCourse: {
         margin: theme.spacing(3),
@@ -17,10 +16,9 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 345
     }
   }));
-const TeacherHomeView = () => {
+const TeacherHomeView = (props) => {
     const classes = useStyles();
-    const coursesInStore = useSelector(state => state.course.data);
-    const [courses, setCourses] = useState([]);
+    const {courses, setCourses} = props;
     const [openAddCourse, setOpenAddcourse] = useState(false);
     const [openEditCourse, setOpenEditcourse] = useState(false);
     const [courseWantEdit, setCourseWantEdit] = useState({});
@@ -44,9 +42,6 @@ const TeacherHomeView = () => {
         newCourses.splice(index, 1, courseNeedUpdate);
         setCourses(newCourses);
     }
-    useEffect(() => {
-        setCourses(coursesInStore);
-    })
     return(
         <div>
             {openAddCourse && 

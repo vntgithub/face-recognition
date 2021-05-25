@@ -1,25 +1,25 @@
-import { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import TeacherHomeView from './views/teacherHome.view';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import AppBar from '../components/AppBar.component';
 import { useHistory } from 'react-router';
 import StudentHomeView from './views/studentHome.view';
-import { unwrapResult } from '@reduxjs/toolkit';
-import { getGroupByStudentId } from '../slices/group'
+import { useState } from 'react';
+
 const Home = () => {
     const history = useHistory();
-    const dispatch = useDispatch();
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if(!token)
         history.push('/signin');
     const user = useSelector(state => state.user.userData);
+    const groupsInStore = useSelector(state => state.group.data);
+    const coursesInStore = useSelector(state => state.course.data);
     const isTeacher = user.isTeacher;
-    const [groups, setGroups] = useState([]);
+    const [groups, setGroups] = useState(groupsInStore);
+    const [courses, setCourses] = useState(coursesInStore);
     return(
         <div>
             <AppBar setGroups={setGroups} groups={groups} />
-            {isTeacher && <TeacherHomeView />}
+            {isTeacher && <TeacherHomeView courses={courses} setCourses={setCourses} />}
             {!isTeacher && <StudentHomeView groups={groups} setGroups={setGroups} />}
         </div>
         

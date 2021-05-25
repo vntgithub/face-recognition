@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 const StudentHomeView = (props) => {
-    const groups  = useSelector(state => state.group.data) || [];
+    const { groups } = props;
     const classes = useStyles();
     return (
         <div>

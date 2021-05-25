@@ -6,9 +6,7 @@ const groupApi = {
         return groups.data;
     },
     getByArrayId: async (arr) => {
-        console.log(arr);
         const res = await axiosClient.post('group/getbyarrayid', arr);
-        console.log(res.data)
         return res.data;
     },
     add: async (group) => {

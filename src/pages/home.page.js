@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import AppBar from '../components/AppBar.component';
 import { useHistory } from 'react-router';
 import StudentHomeView from './views/studentHome.view';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Home = () => {
     const history = useHistory();
@@ -14,8 +14,12 @@ const Home = () => {
     const groupsInStore = useSelector(state => state.group.data);
     const coursesInStore = useSelector(state => state.course.data);
     const isTeacher = user.isTeacher;
-    const [groups, setGroups] = useState(groupsInStore);
-    const [courses, setCourses] = useState(coursesInStore);
+    const [groups, setGroups] = useState([]);
+    const [courses, setCourses] = useState([]);
+    useEffect(() => {
+        setGroups(groupsInStore);
+        setCourses(coursesInStore);
+    }, [groupsInStore, coursesInStore])
     return(
         <div>
             <AppBar setGroups={setGroups} groups={groups} />

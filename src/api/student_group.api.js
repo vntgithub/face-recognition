@@ -2,9 +2,7 @@ import axiosClient from './axiosClient';
 
 const student_groupApi = {
     getByStudentId: async (studentId) => {
-        console.log(studentId)
         const res = await axiosClient.get(`student_group/getbystudentid/${studentId}`);
-        console.log(res.data)
         return res.data.groups;
     },
     join: async (data) => {

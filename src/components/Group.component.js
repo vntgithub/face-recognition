@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -43,7 +44,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Group(props) {
   const history = useHistory();
+  const dispatch = useDispatch();
   const studentId = useSelector(state => state.user.userData['_id']);
+  const groupsInStore = useSelector(state => state.group.data);
+  const [isJoined, setIsJoined] = useState(false);
   const { 
       group, 
       updateGroupsAfterDelete, 
@@ -52,7 +56,6 @@ export default function Group(props) {
       setOpenEditGroup
     } = props;
   const classes = useStyles();
-  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
@@ -64,6 +67,7 @@ export default function Group(props) {
   const handleDeleteGroup = (id, index) => {
     return async function () {
       await dispatch(deleteGroup({id, index}));
+      await classApi.delete(group.classId);
       updateGroupsAfterDelete(index);
     }
   };
@@ -83,13 +87,35 @@ export default function Group(props) {
     localStorage.setItem('idGroup', group['_id']);
     history.push('/group/lesson');
   }
-  const joinGroup = (data) => {
-    const {classId, groupId} = data;
+  const joinGroup = (studentId) => {
+    const classId = group.classId;
+    const groupId = group['_id'];
     return async () => {
+      setIsJoined(true)
       await classApi.join(studentId, classId);
       await student_groupApi.join({studentId, groupId});
+      
     }
   }
+  
+  const checkJoined = () => {
+    const rs = groupsInStore.find(item => item['_id'] === group['_id']);
+    rs ? setIsJoined(true): setIsJoined(false);
+  }
+  
+  const leaveGroup = (studentId) => {
+    const classId = group.classId;
+    const groupId = group['_id'];
+    return async () => {
+      setIsJoined(false)
+      await classApi.leave(studentId, classId);
+      await student_groupApi.leave({studentId, groupId});
+      
+    }
+  }
+  useEffect(() => {
+    checkJoined();
+  }, [])
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -156,9 +182,18 @@ export default function Group(props) {
         <CardActions>
         <Button onClick={viewListLesson} size="small">View list lesson</Button>
       </CardActions>}
-      {localStorage.getItem('isTeacher') === 'false' &&
+      {(localStorage.getItem('isTeacher') === 'false')&& !isJoined &&
         <CardActions>
-        <Button color="primary" onClick={joinGroup({classId: group.classId, groupId: group['_id']})} size="small">Join group</Button>
+        <Button 
+          color="primary" 
+          onClick={joinGroup(studentId)} 
+          size="small">
+            Join group
+        </Button>
+      </CardActions>}
+      {isJoined && localStorage.getItem('isTeacher') !== 'true' &&
+        <CardActions>
+        <Button color="secondary" onClick={leaveGroup(studentId)} size="small">Leave group</Button>
       </CardActions>}
     </Card>
   );

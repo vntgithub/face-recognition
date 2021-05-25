@@ -14,7 +14,8 @@ import Avatar from '@material-ui/core/Avatar';
 import { useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
-
+import { getCourse } from '../slices/course';
+import { getGroupByStudentId } from '../slices/group'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -85,9 +86,8 @@ const useStyles = makeStyles((theme) => ({
 export default function PrimarySearchAppBar(props) {
   const { setGroups } = props;
   const history = useHistory();
-  const classes = useStyles();
   const dispatch = useDispatch();
-  const link = props.titleLink || '/';
+  const classes = useStyles();
   const user = {...useSelector(state => state.user.userData)};
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -117,6 +117,17 @@ export default function PrimarySearchAppBar(props) {
       const rsAction = await dispatch(find(searchString));
       const data = unwrapResult(rsAction);
       setGroups(data);
+    }
+  }
+  const reloadPage = async () => {
+    const path = window.location.pathname;
+    if(path !== '/')
+      history.push('/');
+    else{
+      if(!user.isTeacher)
+        await dispatch(getGroupByStudentId(user['_id']))
+      else
+        await dispatch(getCourse(user['_id']));
     }
   }
   const logout = () => {
@@ -175,7 +186,7 @@ export default function PrimarySearchAppBar(props) {
       <AppBar position="static">
         <Toolbar>
           
-          <Typography onClick={() => history.push(link)} className={classes.title} variant="h6" noWrap>
+          <Typography onClick={reloadPage} className={classes.title} variant="h6" noWrap>
             Face Recognition
           </Typography>
           <div className={classes.search}>

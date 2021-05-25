@@ -47,10 +47,12 @@ export const find = createAsyncThunk(
     }
 )
 
+
 export const groupSlice = createSlice({
     name: 'group',
     initialState: {
-        data: []    
+        data: [],
+        searchRs: []
     },
     reducer: {},
     extraReducers: {
@@ -77,10 +79,10 @@ export const groupSlice = createSlice({
             state.data = action.payload;
         },
         [find.fulfilled]: (state, action) => {
-            state.data = action.payload;
+            state.searchRs = action.payload;
         }
     } 
 });
 
-export const { selectGroupWantEdit } = groupSlice.actions;
+// export const { join } = groupSlice.actions;
 export default groupSlice.reducer;

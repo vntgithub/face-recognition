@@ -9,6 +9,10 @@ const classApi = {
     },
     delete: async (id) => {
         await axiosClient.delete(`class/delete/${id}`);
+    },
+    getById: async (id) => {
+        const res = await axiosClient.get(`class/getbyid/${id}`);
+        return res.data
     }
 }
 

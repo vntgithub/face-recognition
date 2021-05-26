@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import classApi from '../api/class.api';
 import groupApi from '../api/group.api';
 import student_groupApi from '../api/student_group.api';
 

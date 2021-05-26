@@ -42,7 +42,7 @@ export default function ListLessonPage() {
   }, [])
   return (
     <div style={{ height: 400, width: '100%' }}>
-      {/* <AppBar /> */}
+      <AppBar />
       <Container className={classes.root}>
         <TableContainer component={Paper} >
           <Table className={classes.table} aria-label="simple table">

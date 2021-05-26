@@ -18,7 +18,7 @@ import { deleteGroup } from '../slices/group';
 import { useHistory } from 'react-router';
 import classApi from '../api/class.api';
 import student_groupApi from '../api/student_group.api';
-import { groupContext } from '../context/context';
+import { getClassById } from '../slices/class';
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2),
@@ -48,7 +48,6 @@ export default function Group(props) {
   const dispatch = useDispatch();
   // const { groups, setGroups } = useContext(groupContext);
   const studentId = useSelector(state => state.user.userData['_id']);
-  const groupsInStore = useSelector(state => state.group.data);
   const [isJoined, setIsJoined] = useState(false);
   const { 
       group, 
@@ -86,7 +85,8 @@ export default function Group(props) {
       return 'finished';
     return 'unfinished'
   }
-  const viewListLesson = () => {
+  const viewListLesson = async () => {
+    localStorage.setItem('idClass', group.classId);
     localStorage.setItem('idGroup', group['_id']);
     history.push('/group/lesson');
   }
@@ -108,16 +108,6 @@ export default function Group(props) {
     const classId = group.classId;
     const groupId = group['_id'];
     return async () => {
-      // let newGroups = [...groups];
-      // let index = -1;
-      // for(let i = 0; i < newGroups.length; i++){
-      //   if(group['_id'] === newGroups[i]['_id']){
-      //     index = i;
-      //     break;
-      //   }
-      // }
-      // newGroups.splice(index,1);
-      //setGroups(newGroups);
       setIsJoined(false)
       await classApi.leave(studentId, classId);
       await student_groupApi.leave({studentId, groupId});

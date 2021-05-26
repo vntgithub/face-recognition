@@ -4,7 +4,7 @@ import AppBar from '../components/AppBar.component';
 import { useHistory } from 'react-router';
 import StudentHomeView from './views/studentHome.view';
 import { useState, useEffect } from 'react';
-
+import { groupContext } from '../context/context';
 const Home = () => {
     const history = useHistory();
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -23,8 +23,11 @@ const Home = () => {
     return(
         <div>
             <AppBar setGroups={setGroups} groups={groups} />
+            <groupContext.Provider value={{groups, setGroups}}>
             {isTeacher && <TeacherHomeView courses={courses} setCourses={setCourses} />}
             {!isTeacher && <StudentHomeView groups={groups} setGroups={setGroups} />}
+            </groupContext.Provider>
+            
         </div>
         
     )

@@ -15,8 +15,16 @@ const useStyles = makeStyles((theme) => ({
   }));
 const StudentHomeView = (props) => {
     const { groups } = props;
-    const checkIsSearchRs = useSelector(state => state.group.checkIsSearchRs);
+    const groupsOfStudent = useSelector(state => state.group.data);
     const classes = useStyles();
+    const checkJoined = (item) => {
+        for(let i = 0; i < groupsOfStudent.length; i++){
+          if(item['_id'] === groupsOfStudent[i]['_id']){
+            return true
+          }
+        }
+        return false;
+      }
     return (
         <div>
             <Container>
@@ -24,7 +32,7 @@ const StudentHomeView = (props) => {
                 {groups.map((item, index) => 
                     <div key={index} className={classes.divGroup}>
                         <Group 
-                            checkIsSearchRs={checkIsSearchRs}
+                            checkOfStudent={checkJoined(item)}
                             index={index}
                             group={item} 
                             />

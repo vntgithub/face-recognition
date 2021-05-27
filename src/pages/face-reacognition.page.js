@@ -2,7 +2,7 @@ import AppBar from '../components/AppBar.component';
 import { 
     Container, Table, TableHead, 
     TableRow, TableBody, TableCell,
-    TableContainer, Paper
+    TableContainer, Paper, Grid
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,9 @@ import { getClassById } from '../slices/class';
 const useStyles = makeStyles((theme) => ({
     root: {
         marginTop: theme.spacing(5),
+    },
+    textAlign: {
+        textAlign: 'center'
     }
   }));
 const FaceRecognitionPage = () => {
@@ -31,32 +34,39 @@ const FaceRecognitionPage = () => {
     return (
         <div>
             <AppBar />
-            <Container className={classes.root} maxWidth='xl'>
-            <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                    <TableHead>
-                    <TableRow>
-                        <TableCell>No</TableCell>
-                        <TableCell align="right">Name</TableCell>
-                        <TableCell align="right">Code</TableCell>
-                        <TableCell align="right">Attend</TableCell>
-                    </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {data.map((row, index) => (
-                        <TableRow key={row.name}>
-                            <TableCell key={index} component="th" scope="row">
-                                {index}
-                            </TableCell>
-                            <TableCell align="right">{row.name}</TableCell>
-                            <TableCell align="right">{row.code}</TableCell>
-                            <TableCell align="right">false</TableCell>
+            
+            <Grid container className={classes.root} >
+                <Grid item xs={6}>
+                    <h1>image</h1>
+                </Grid>
+                <Grid item xs={6}>
+                <h2 className={classes.textAlign}>{localStorage.getItem('lesson')}</h2>
+                <TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="simple table">
+                        <TableHead>
+                        <TableRow>
+                            <TableCell>No</TableCell>
+                            <TableCell align="left">Name</TableCell>
+                            <TableCell align="left">Code</TableCell>
+                            <TableCell align="right">Attend</TableCell>
                         </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
+                        </TableHead>
+                        <TableBody>
+                        {data.map((row, index) => (
+                            <TableRow key={row.name}>
+                                <TableCell key={index} component="th" scope="row">
+                                    {index}
+                                </TableCell>
+                                <TableCell align="left">{row.name}</TableCell>
+                                <TableCell align="left">{row.code}</TableCell>
+                                <TableCell align="right">false</TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
                 </TableContainer>
-            </Container>
+                </Grid>
+            </Grid>
         </div>
     )
 }

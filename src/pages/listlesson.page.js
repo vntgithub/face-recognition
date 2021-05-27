@@ -31,11 +31,15 @@ export default function ListLessonPage() {
   const classes = useStyles();
   const idGroup = localStorage.getItem('idGroup');
   const [groupSelected, setGroupSelected] = useState({lessons: []});
-  const startLesson = () => history.push('/face-recognition');
+  const startLesson = (lesson) => {
+    return () => {
+      localStorage.setItem('lesson', lesson);
+      history.push('/face-recognition');
+    }
+  }
   useEffect(() => {
     const fetch = async () => {
       const data = await groupApi.getById(idGroup);
-      console.log(data);
       setGroupSelected(data);
     }
     fetch();
@@ -67,7 +71,7 @@ export default function ListLessonPage() {
                 </TableCell>
               <TableCell align="center">
                 {!item.isDone ? 
-                <Button onClick={startLesson} variant="contained" color="primary">
+                <Button onClick={startLesson(item.name)} variant="contained" color="primary">
                   Start
                 </Button>  
                 :

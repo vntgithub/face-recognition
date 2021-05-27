@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Group(props) {
   const history = useHistory();
   const dispatch = useDispatch();
-  // const { groups, setGroups } = useContext(groupContext);
   const studentId = useSelector(state => state.user.userData['_id']);
   const [isJoined, setIsJoined] = useState(false);
   const { 
@@ -140,6 +139,7 @@ export default function Group(props) {
         title={group.teacherName}
         subheader={group.teacherCode}
       />
+      {(localStorage.getItem('isTeacher') === 'true') && 
       <Menu
         id="simple-menu"
         anchorEl={anchorEl}
@@ -155,8 +155,7 @@ export default function Group(props) {
           <Delete />
           Delete
         </MenuItem>
-
-      </Menu>
+      </Menu>}
       
       <CardContent>
 

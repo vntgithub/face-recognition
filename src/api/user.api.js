@@ -22,9 +22,7 @@ const userApi = {
         return res.data.userInformation;
     },
     getByArrId: async (arr) => {
-        console.log(arr)
         const res = await axiosClient.post(`user/getbyarrayid`, arr);
-        console.log(res.data);
         return res.data;
     }
 }

@@ -28,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function ListLessonPage() {
   const history = useHistory();
+    if(localStorage.getItem('isTeacher') === 'false')
+        history.push('/');
   const classes = useStyles();
   const idGroup = localStorage.getItem('idGroup');
   const [groupSelected, setGroupSelected] = useState({lessons: []});

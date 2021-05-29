@@ -8,6 +8,7 @@ import AddGroup from '../components/AddGroup.component';
 import EditGroup from '../components/EditGroup.component';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { getByCourseId } from '../slices/group'
+import { useHistory } from 'react-router';
 const useStyles = makeStyles((theme) => ({
     divGroup: {
         margin: theme.spacing(3),
@@ -19,6 +20,9 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 const GroupPage = () => {
+    const history = useHistory();
+    if(localStorage.getItem('isTeacher') === 'false')
+        history.push('/');
     const dispatch = useDispatch();
     const classes = useStyles();
     const [id, setId] = useState(0);

@@ -189,6 +189,7 @@ export default function PrimarySearchAppBar(props) {
           <Typography onClick={reloadPage} className={classes.title} variant="h6" noWrap>
             Face Recognition
           </Typography>
+          {localStorage.getItem('isTeacher') === 'false' &&
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
@@ -202,7 +203,7 @@ export default function PrimarySearchAppBar(props) {
               }}
               inputProps={{ 'aria-label': 'search' }}
             />
-          </div>
+          </div>}
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             

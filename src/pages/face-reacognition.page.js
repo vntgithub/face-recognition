@@ -14,7 +14,7 @@ import { getClassById } from '../slices/class';
 import * as faceapi from 'face-api.js';
 import Webcam from "react-webcam";
 import {Image} from '@material-ui/icons/';
-import { imageTensorToCanvas } from 'face-api.js';
+import './style/style2.css';
 const useStyles = makeStyles((theme) => ({
     root: {
         marginTop: theme.spacing(5),
@@ -53,9 +53,9 @@ const useStyles = makeStyles((theme) => ({
         color: 'white'
     },
     image: {
-        maxHeight: '100%',
-        maxWidth: "100%"
-    }
+        maxHeight: '621px',
+        maxWidth: "1088px"
+    },
   }));
 const FaceRecognitionPage = () => {
     const history = useHistory();
@@ -109,7 +109,7 @@ const FaceRecognitionPage = () => {
     async function onDone() {
         const imageUpload = document.getElementById('imageUpload')
         const container = document.getElementById('containerImage')
-        // container.style.position = 'relative'
+        container.style.position = 'relative'
         const labeledFaceDescriptors = await loadLabeledImages()
         const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
         let image
@@ -175,10 +175,13 @@ const FaceRecognitionPage = () => {
                     videoConstraints={videoConstraints}
                 />}
                 {!start &&
-                <div id="containerImage" className={classes.tempWebcam}>
-                    {srcImage!== '#' && <img className={classes.image} alt="image-recognition" src={srcImage} />}
-                    {srcImage === '#' &&<Image className={classes.icon} ></Image>}
+                <div className={classes.tempWebcam}>
+                    <div id="containerImage">
+                        {srcImage!== '#' && <img id="idImage" className={classes.image} alt="image-recognition" src={srcImage} />}
+                        {srcImage === '#' &&<Image className={classes.icon} ></Image>}
+                    </div>
                 </div>
+                
                 }
                 <Container className={classes.marginContainer}>
                     <Button 

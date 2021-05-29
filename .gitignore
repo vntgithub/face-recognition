@@ -5,6 +5,8 @@
 /src/models
 /.pnp
 .pnp.js
+/public/img
+/public/labeled_images
 
 # testing
 /coverage

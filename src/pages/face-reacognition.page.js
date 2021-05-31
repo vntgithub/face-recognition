@@ -59,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
     },
     divContainerImage: {
         position: 'relative'
+    },
+    endLessonButtonContainer: {
+        paddingLeft: 'auto',
+        margin: theme.spacing(5)
     }
   }));
 const FaceRecognitionPage = () => {
@@ -111,37 +115,39 @@ const FaceRecognitionPage = () => {
         setDoneLesson(true);
     }
     const onDone = async () => {
-        const imageUpload = document.getElementById('imageUpload')
-        const container = document.getElementById('containerImage')
-        const labeledFaceDescriptors = await loadLabeledImages()
-        const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
-        let image
-        let canvas
-        imageUpload.addEventListener('change', async (e) => {
-            const file = e.target.files;
-            if (image) image.remove()
-            if (canvas) canvas.remove()
-            image = await faceapi.bufferToImage(file[0])
-            let reader = new FileReader();
-            reader.onload = function (event) {
-                setSrcImage(event.target.result);
-            };
-            if(file[0]){
-            reader.readAsDataURL(file[0]);
-            }
-            canvas = faceapi.createCanvasFromMedia(image)
-            container.append(canvas)
-            const displaySize = { width: image.width, height: image.height }
-            faceapi.matchDimensions(canvas, displaySize)
-            const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
-            const resizedDetections = faceapi.resizeResults(detections, displaySize)
-            const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
-            results.forEach((result, i) => {
-                const box = resizedDetections[i].detection.box
-                const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
-                drawBox.draw(canvas)  
-                })
-        })  
+        if(labels.length > 0){
+            const imageUpload = document.getElementById('imageUpload')
+            const container = document.getElementById('containerImage')
+            const labeledFaceDescriptors = await loadLabeledImages()
+            const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
+            let image
+            let canvas
+            imageUpload.addEventListener('change', async (e) => {
+                const file = e.target.files;
+                if (image) image.remove()
+                if (canvas) canvas.remove()
+                image = await faceapi.bufferToImage(file[0])
+                let reader = new FileReader();
+                reader.onload = function (event) {
+                    setSrcImage(event.target.result);
+                };
+                if(file[0]){
+                reader.readAsDataURL(file[0]);
+                }
+                canvas = faceapi.createCanvasFromMedia(image)
+                container.append(canvas)
+                const displaySize = { width: image.width, height: image.height }
+                faceapi.matchDimensions(canvas, displaySize)
+                const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
+                const resizedDetections = faceapi.resizeResults(detections, displaySize)
+                const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
+                results.forEach((result, i) => {
+                    const box = resizedDetections[i].detection.box
+                    const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
+                    drawBox.draw(canvas)  
+                    })
+            })  
+        }
         setModelsLoaded(true)
     }
     useEffect(() => {
@@ -150,6 +156,7 @@ const FaceRecognitionPage = () => {
             const rsAction = await dispatch(getClassById(classId));
             const classData = unwrapResult(rsAction);
             const lb = classData.map(item => item.code);
+            const attendArr = classData.map(item => item)
             setLabels(lb);
             setData(classData);
         }
@@ -241,7 +248,7 @@ const FaceRecognitionPage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                    <div>
+                    <div className={classes.endLessonButtonContainer}>
                         <Button onClick={endLesson} variant="contained" color="primary" component="span">
                             End lesson
                         </Button>

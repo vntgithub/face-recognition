@@ -95,7 +95,8 @@ export default function SignIn() {
     isTeacher: false
   });
   const [file, setFile] = React.useState(null);
-  const [srcImage, setSrcImage] = React.useState('');
+  const [srcImage1, setSrcImage1] = React.useState('');
+  const [srcImage2, setSrcImage2] = React.useState('');
   const [err, setErr] = React.useState({
     name: false,
     code: false,
@@ -126,15 +127,19 @@ export default function SignIn() {
   const getImage = (e) => {
     const file = e.target.files;
     setFile(file);
- 
-    let reader = new FileReader();
-    reader.onload = function (e) {
-            setSrcImage(e.target.result);
-        };
-
-    if(file[0]){
-      reader.readAsDataURL(file[0]);
+    for(let i = 0; i < 2; i++){
+      let reader = new FileReader();
+      reader.onload = function (e) {
+        if(i === 0)
+          setSrcImage1(e.target.result)
+        else  
+          setSrcImage2(e.target.result)
+      };
+      if(file[i]){
+        reader.readAsDataURL(file[i]);
+      }
     }
+
 }
   const vadlidateData = async () => {
     let check = true;
@@ -199,7 +204,7 @@ export default function SignIn() {
     }else{
       newErr.position = false;
     }
-    if(!file){
+    if(!file || file.length !== 2){
       check &= false;
       newErr.image = true
     }else{
@@ -215,7 +220,8 @@ export default function SignIn() {
         let data = {...dataForm};
         delete data.passwordConfirm;
         let form = new FormData();
-        form.append('image', file[0]);
+        form.append('imagefirst', file[0]);
+        form.append('imagesecond', file[1]);
         for(let key in data){
           form.append(key, dataForm[key]);
         }
@@ -351,6 +357,7 @@ export default function SignIn() {
           accept="image/x-png,image/gif,image/jpeg"
           id="image"
           onChange={getImage}
+          multiple
           />
         <Button
             onClick={handleInput}
@@ -362,14 +369,19 @@ export default function SignIn() {
           </Button>
           <Avatar 
             alt="Avatar" 
-            src={srcImage}
+            src={srcImage1}
+            className="reviewImg"
+          />
+          <Avatar 
+            alt="Avatar" 
+            src={srcImage2}
             className="reviewImg"
           />
           <Alert 
             severity="error" 
             className={classnames({"hidden": !err.image})}
           >
-            Image is require
+            Image is require, please choose 2 image.
           </Alert>
           <Button
             onClick={submit}

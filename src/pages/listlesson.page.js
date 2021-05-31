@@ -33,7 +33,7 @@ export default function ListLessonPage() {
   const classes = useStyles();
   const idGroup = localStorage.getItem('idGroup');
   const [groupSelected, setGroupSelected] = useState({lessons: []});
-  const startLesson = (lesson) => {
+  const startLesson = (lesson, indexLesson) => {
     return () => {
       localStorage.setItem('lesson', lesson);
       history.push('/face-recognition');
@@ -73,7 +73,7 @@ export default function ListLessonPage() {
                 </TableCell>
               <TableCell align="center">
                 {!item.isDone ? 
-                <Button onClick={startLesson(item.name)} variant="contained" color="primary">
+                <Button onClick={startLesson(item.name, index)} variant="contained" color="primary">
                   Start
                 </Button>  
                 :

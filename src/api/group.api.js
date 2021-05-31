@@ -30,6 +30,9 @@ const groupApi = {
     find: async (str) => {
         const res = await axiosClient.get(`group/findbycode/${str}`);
         return res.data;
+    },
+    endLesson: async (idGroup, indexLesson) => {
+        await axiosClient.put('group/endlesson', {idGroup, indexLesson})
     }
 }
 

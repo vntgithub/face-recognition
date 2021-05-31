@@ -15,6 +15,7 @@ import * as faceapi from 'face-api.js';
 import Webcam from "react-webcam";
 import {Image} from '@material-ui/icons/';
 import './style/style2.css';
+import groupApi from '../api/group.api';
 const useStyles = makeStyles((theme) => ({
     root: {
         marginTop: theme.spacing(5),
@@ -56,19 +57,24 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: '621px',
         maxWidth: "1088px"
     },
+    divContainerImage: {
+        position: 'relative'
+    }
   }));
 const FaceRecognitionPage = () => {
     const history = useHistory();
     if(localStorage.getItem('isTeacher') === 'false')
         history.push('/');
+    const idGroup = localStorage.getItem('idGroup');
+    const indexLesson = localStorage.getItem('indexLesson');
     const classes = useStyles();
     const dispatch = useDispatch();
     const [labels, setLabels] = useState([]);
-    const [urlImg, setUrlImg] = useState('#');
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [start, setStart] = useState(false);
     const [data, setData] = useState([]);
-    const [srcImage, setSrcImage] = useState('#');
+    const [doneLesson, setDoneLesson] = useState(false)
+    const [srcImage, setSrcImage] = useState(null);
     
     const videoConstraints = {
         width: 1280,
@@ -87,42 +93,38 @@ const FaceRecognitionPage = () => {
     const clickUploadImage = () => document.getElementById('imageUpload').click()
     
     function loadLabeledImages() {
-        const labels = [
-          'Black Widow', 
-          'Captain America', 
-          'Captain Marvel', 'Hawkeye', 
-          'Jim Rhodes', 'Thor', 
-          'Tony Stark']
         return Promise.all(
-          labels.map(async label => {
-            const descriptions = []
-            for (let i = 1; i <= 2; i++) {
-              const img = await faceapi.fetchImage(`labeled_images/${label}/${i}.jpg`)
-              const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-              descriptions.push(detections.descriptor)
-            }
-      
-            return new faceapi.LabeledFaceDescriptors(label, descriptions)
-          })
-        )
+            labels.map(async label => {
+                const descriptions = []
+                for (let i = 0; i < 2; i++) {
+                    const img = await faceapi.fetchImage(`img/${label}/${i}.jpg`)
+                    const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+                    descriptions.push(detections.descriptor)
+                }
+                return new faceapi.LabeledFaceDescriptors(label, descriptions)
+            })
+            )
       }
-    async function onDone() {
+    
+    const endLesson = async () => {
+        await groupApi.endLesson(idGroup, indexLesson);
+        setDoneLesson(true);
+    }
+    const onDone = async () => {
         const imageUpload = document.getElementById('imageUpload')
         const container = document.getElementById('containerImage')
-        container.style.position = 'relative'
         const labeledFaceDescriptors = await loadLabeledImages()
         const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
         let image
         let canvas
-        setModelsLoaded(true);
         imageUpload.addEventListener('change', async (e) => {
+            const file = e.target.files;
             if (image) image.remove()
             if (canvas) canvas.remove()
-            image = await faceapi.bufferToImage(imageUpload.files[0])
-            const file = e.target.files;
+            image = await faceapi.bufferToImage(file[0])
             let reader = new FileReader();
-            reader.onload = function (e) {
-            setSrcImage(e.target.result);
+            reader.onload = function (event) {
+                setSrcImage(event.target.result);
             };
             if(file[0]){
             reader.readAsDataURL(file[0]);
@@ -137,18 +139,17 @@ const FaceRecognitionPage = () => {
             results.forEach((result, i) => {
                 const box = resizedDetections[i].detection.box
                 const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
-                drawBox.draw(canvas)
-            })
-        })
-      }
+                drawBox.draw(canvas)  
+                })
+        })  
+        setModelsLoaded(true)
+    }
     useEffect(() => {
         const fetchClassData = async () => {
             const classId = localStorage.getItem('idClass');
             const rsAction = await dispatch(getClassById(classId));
             const classData = unwrapResult(rsAction);
             const lb = classData.map(item => item.code);
-            const urlImgArray = classData.map(item => item.img);
-            setUrlImg(urlImgArray);
             setLabels(lb);
             setData(classData);
         }
@@ -176,9 +177,9 @@ const FaceRecognitionPage = () => {
                 />}
                 {!start &&
                 <div className={classes.tempWebcam}>
-                    <div id="containerImage">
-                        {srcImage!== '#' && <img id="idImage" className={classes.image} alt="image-recognition" src={srcImage} />}
-                        {srcImage === '#' &&<Image className={classes.icon} ></Image>}
+                    <div className={classes.divContainerImage} id="containerImage">
+                        {srcImage  && <img id="idImage" className={classes.image} alt="image-recognition" src={srcImage} />}
+                        {!srcImage &&<Image className={classes.icon} ></Image>}
                     </div>
                 </div>
                 
@@ -240,6 +241,12 @@ const FaceRecognitionPage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                    <div>
+                        <Button onClick={endLesson} variant="contained" color="primary" component="span">
+                            End lesson
+                        </Button>
+                    </div>
+                    {doneLesson && <div className={classes.alertContainer}>End...</div>}
                 </Grid>
             </Grid>
         </div>

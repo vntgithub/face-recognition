@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -18,7 +18,6 @@ import { deleteGroup } from '../slices/group';
 import { useHistory } from 'react-router';
 import classApi from '../api/class.api';
 import student_groupApi from '../api/student_group.api';
-import { getClassById } from '../slices/class';
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2),

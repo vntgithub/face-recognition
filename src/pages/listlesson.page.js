@@ -33,8 +33,9 @@ export default function ListLessonPage() {
   const classes = useStyles();
   const idGroup = localStorage.getItem('idGroup');
   const [groupSelected, setGroupSelected] = useState({lessons: []});
-  const startLesson = (lesson, indexLesson) => {
+  const startLesson = (lesson, index) => {
     return () => {
+      localStorage.setItem('indexLesson', index)
       localStorage.setItem('lesson', lesson);
       history.push('/face-recognition');
     }

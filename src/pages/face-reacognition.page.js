@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useHistory } from 'react-router';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getClassById } from '../slices/class';
 import * as faceapi from 'face-api.js';
 import Webcam from "react-webcam";
@@ -77,9 +77,12 @@ const FaceRecognitionPage = () => {
         history.push('/');
     const idGroup = localStorage.getItem('idGroup');
     const indexLesson = localStorage.getItem('indexLesson');
+    // const attendList = useSelector(state => state.group.attendList);
+    // const attendListOfLesson = attendList.map(item => item[indexLesson]);
     const classes = useStyles();
     const dispatch = useDispatch();
     const [labels, setLabels] = useState([]);
+    const [attendList, setAttendList] = useState([]);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [start, setStart] = useState(false);
     const [data, setData] = useState([]);
@@ -189,11 +192,12 @@ const FaceRecognitionPage = () => {
         const fetchClassData = async () => {
             const classId = localStorage.getItem('idClass');
             const rsAction = await dispatch(getClassById(classId));
-            const classData = unwrapResult(rsAction);
-            const lb = classData.map(item => item.code);
+            const classRs = unwrapResult(rsAction);
+            const lb = classRs.classData.map(item => item.code);
             //const attendArr = classData.map(item => item)
             setLabels(lb);
-            setData(classData);
+            setAttendList(classRs.attendList.map(item => item[indexLesson]))
+            setData(classRs.classData);
         }
         fetchClassData();
     }, [])
@@ -290,7 +294,7 @@ const FaceRecognitionPage = () => {
                                 </TableCell>
                                 <TableCell align="left">{row.name}</TableCell>
                                 <TableCell align="left">{row.code}</TableCell>
-                                <TableCell align="right">false</TableCell>
+                                <TableCell align="right">{attendList[index].toString()}</TableCell>
                             </TableRow>
                         ))}
                         </TableBody>

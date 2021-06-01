@@ -63,6 +63,12 @@ const useStyles = makeStyles((theme) => ({
     endLessonButtonContainer: {
         paddingLeft: 'auto',
         margin: theme.spacing(5)
+    },
+    webcamContainer: {
+        width: '640px',
+        height: '360px',
+        display: 'hidden',
+        position: 'absolute'
     }
   }));
 const FaceRecognitionPage = () => {
@@ -109,7 +115,31 @@ const FaceRecognitionPage = () => {
             })
             )
       }
-    
+    //   const addEventStart = async () => {
+    //     const video = document.getElementById('video')
+    //     if(labels.length > 0){
+    //         const labeledFaceDescriptors = await loadLabeledImages()
+    //         const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
+    //         video.addEventListener('play', async() => {
+    //             // const image = await faceapi.bufferToImage(capture)
+    //             const canvas = faceapi.createCanvasFromMedia(video)
+    //             document.getElementById('webcamContainer').append(canvas)
+    //             const displaySize = { width: 640, height: 360 }
+    //             faceapi.matchDimensions(canvas, displaySize)
+    //             setInterval(async () => {
+    //                 const detections = await faceapi.detectAllFaces(capture, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+    //                 const resizedDetections = faceapi.resizeResults(detections, displaySize)
+    //                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+    //                 const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
+    //                 results.forEach((result, i) => {
+    //                     const box = resizedDetections[i].detection.box
+    //                     const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
+    //                     drawBox.draw(canvas)  
+    //                     })
+    //             }, 100)
+    //         })
+    //     }
+    // }
     const endLesson = async () => {
         await groupApi.endLesson(idGroup, indexLesson);
         setDoneLesson(true);
@@ -147,8 +177,13 @@ const FaceRecognitionPage = () => {
                     drawBox.draw(canvas)  
                     })
             })  
+            setModelsLoaded(true)
         }
-        setModelsLoaded(true)
+    }
+    const  startVideo = async () => {
+        setStart(!start)
+        document.getElementById('webcomContainer').style.display = 'block'
+        document.getElementById('webcomContainer').style.position = 'relative'
     }
     useEffect(() => {
         const fetchClassData = async () => {
@@ -156,17 +191,25 @@ const FaceRecognitionPage = () => {
             const rsAction = await dispatch(getClassById(classId));
             const classData = unwrapResult(rsAction);
             const lb = classData.map(item => item.code);
-            const attendArr = classData.map(item => item)
+            //const attendArr = classData.map(item => item)
             setLabels(lb);
             setData(classData);
         }
         fetchClassData();
-        Promise.all([
-            faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-            faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-            faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
-          ]).then(onDone)
     }, [])
+    useEffect(() => {
+        if(labels.length > 0){
+            Promise.all([
+                faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+                faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+                faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
+              ]).then(() => {
+                  onDone()
+                //   addEventStart()
+            })
+        }
+    }, [labels])
+   
     return (
         <div>
             <AppBar />
@@ -174,15 +217,20 @@ const FaceRecognitionPage = () => {
             <Grid container className={classes.root} >
                 <Grid item xs={8}>
                 {start &&
-                <Webcam
-                    audio={false}
-                    height={360}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    width={640}
-                    videoConstraints={videoConstraints}
-                />}
-                {!start &&
+                <div className={classes.webcamContainer} id="webcamContainer">
+                    <Webcam
+                        id="video"
+                        audio={false}
+                        height={360}
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        width={640}
+                        videoConstraints={videoConstraints}
+                     />
+                </div>
+                } 
+                
+                {/* {!start && */}
                 <div className={classes.tempWebcam}>
                     <div className={classes.divContainerImage} id="containerImage">
                         {srcImage  && <img id="idImage" className={classes.image} alt="image-recognition" src={srcImage} />}
@@ -190,12 +238,12 @@ const FaceRecognitionPage = () => {
                     </div>
                 </div>
                 
-                }
+                {/* } */}
                 <Container className={classes.marginContainer}>
                     <Button 
                         className={classes.marginRightButton} 
                         variant="contained" color="primary" 
-                        onClick={() => setStart(!start)}>
+                        onClick={startVideo}>
                             Start video
                     </Button>
                     <input

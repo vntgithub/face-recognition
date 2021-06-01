@@ -84,7 +84,7 @@ const FaceRecognitionPage = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const [labels, setLabels] = useState([]);
-    const [attendList, setAttendList] = useState(list);
+    const [attendList, setAttendList] = useState([]);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [start, setStart] = useState(false);
     const [data, setData] = useState([]);
@@ -176,7 +176,7 @@ const FaceRecognitionPage = () => {
                 const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
                 const resizedDetections = faceapi.resizeResults(detections, displaySize)
                 const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
-                let newAttendList = [...attendList]
+                let newAttendList = [...list]
                 results.forEach((result, i) => {
                     const box = resizedDetections[i].detection.box
                     const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
@@ -189,7 +189,11 @@ const FaceRecognitionPage = () => {
                         }
                     }
                 })
-                // await classApi.recognition(classId, newAttendList, indexLesson)
+                
+                
+                
+
+                await classApi.recognition(classId, newAttendList, indexLesson)
                 setAttendList(newAttendList)
             })  
             setModelsLoaded(true)
@@ -205,6 +209,8 @@ const FaceRecognitionPage = () => {
            const getClassAction =  await dispatch(getClassById(classId));
            const dataRs = unwrapResult(getClassAction)
            const labelsInStore = dataRs.data.map(item => item.code)
+           const attenListData = dataRs.attendList.map(item => item[indexLesson])
+           setAttendList(attenListData)
            setData(dataRs.data);
            setLabels(labelsInStore)
         }

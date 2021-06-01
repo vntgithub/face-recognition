@@ -5,10 +5,10 @@ import userApi from '../api/user.api';
 export const getClassById = createAsyncThunk(
     'getClassById',
     async (id) => {
-        const rsData = await classApi.getById(id);
-        const arrId = rsData.data.map(item => item.studentId); 
+        const classRS = await classApi.getById(id);
+        const arrId = classRS.data.map(item => item.studentId); 
         const data = await userApi.getByArrId(arrId);
-        const attendList =  rsData.data.map(item => item.lessonAttend)
+        const attendList =  classRS.data.map(item => item.lessonAttend)
         return {data, attendList};
     }
 );
@@ -16,7 +16,8 @@ const classSlice = createSlice({
     name: 'class',
     initialState: {
         data: [],
-        attendList: []
+        attendList: [],
+        class: {}
     },
     reducers: {},
     extraReducers: {

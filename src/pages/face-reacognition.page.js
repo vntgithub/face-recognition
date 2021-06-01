@@ -16,6 +16,7 @@ import Webcam from "react-webcam";
 import {Image} from '@material-ui/icons/';
 import './style/style2.css';
 import groupApi from '../api/group.api';
+import classApi from '../api/class.api';
 const useStyles = makeStyles((theme) => ({
     root: {
         marginTop: theme.spacing(5),
@@ -75,14 +76,15 @@ const FaceRecognitionPage = () => {
     const history = useHistory();
     if(localStorage.getItem('isTeacher') === 'false')
         history.push('/');
-    const idGroup = localStorage.getItem('idGroup');
     const indexLesson = localStorage.getItem('indexLesson');
-    // const attendList = useSelector(state => state.group.attendList);
-    // const attendListOfLesson = attendList.map(item => item[indexLesson]);
+    const classId = localStorage.getItem('idClass');
+    const idGroup = localStorage.getItem('idGroup');
+    const classInStore = useSelector(state => state.class)
+    const list = classInStore.attendList.map(item => item[indexLesson])
     const classes = useStyles();
     const dispatch = useDispatch();
     const [labels, setLabels] = useState([]);
-    const [attendList, setAttendList] = useState([]);
+    const [attendList, setAttendList] = useState(list);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [start, setStart] = useState(false);
     const [data, setData] = useState([]);
@@ -174,11 +176,21 @@ const FaceRecognitionPage = () => {
                 const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
                 const resizedDetections = faceapi.resizeResults(detections, displaySize)
                 const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
+                let newAttendList = [...attendList]
                 results.forEach((result, i) => {
                     const box = resizedDetections[i].detection.box
                     const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
                     drawBox.draw(canvas)  
-                    })
+                    const codeRecognition = result.toString().substr(0,result.toString().indexOf(' '))
+                    if(codeRecognition !== 'unknown'){
+                        const indexCode = labels.indexOf(codeRecognition)
+                        if(indexCode !== -1){
+                            newAttendList[indexCode] = true
+                        }
+                    }
+                })
+                // await classApi.recognition(classId, newAttendList, indexLesson)
+                setAttendList(newAttendList)
             })  
             setModelsLoaded(true)
         }
@@ -190,14 +202,11 @@ const FaceRecognitionPage = () => {
     }
     useEffect(() => {
         const fetchClassData = async () => {
-            const classId = localStorage.getItem('idClass');
-            const rsAction = await dispatch(getClassById(classId));
-            const classRs = unwrapResult(rsAction);
-            const lb = classRs.classData.map(item => item.code);
-            //const attendArr = classData.map(item => item)
-            setLabels(lb);
-            setAttendList(classRs.attendList.map(item => item[indexLesson]))
-            setData(classRs.classData);
+           const getClassAction =  await dispatch(getClassById(classId));
+           const dataRs = unwrapResult(getClassAction)
+           const labelsInStore = dataRs.data.map(item => item.code)
+           setData(dataRs.data);
+           setLabels(labelsInStore)
         }
         fetchClassData();
     }, [])

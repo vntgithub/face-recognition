@@ -7,9 +7,9 @@ export const getClassById = createAsyncThunk(
     async (id) => {
         const rsData = await classApi.getById(id);
         const arrId = rsData.data.map(item => item.studentId); 
-        const classData = await userApi.getByArrId(arrId);
+        const data = await userApi.getByArrId(arrId);
         const attendList =  rsData.data.map(item => item.lessonAttend)
-        return {classData, attendList};
+        return {data, attendList};
     }
 );
 const classSlice = createSlice({
@@ -21,8 +21,8 @@ const classSlice = createSlice({
     reducers: {},
     extraReducers: {
         [getClassById.fulfilled]: (state, action) => {
-            state.data = action.payload.classData;
-            state.attendList = action.attendList;
+            state.data = action.payload.data;
+            state.attendList = action.payload.attendList;
         }
     }
 });

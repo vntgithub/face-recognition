@@ -13,6 +13,10 @@ const classApi = {
     getById: async (id) => {
         const res = await axiosClient.get(`class/getbyid/${id}`);
         return res.data
+    },
+    recognition: async (classId, arr, indexLesson) => {
+        const res = await axiosClient.put('/class/recognition', {classId, arr, indexLesson});
+        return res.data;
     }
 }
 

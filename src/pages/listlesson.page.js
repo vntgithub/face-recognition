@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
 import groupApi from '../api/group.api';
 import { useHistory } from 'react-router';
-
+import { Check, Close } from '@material-ui/icons/';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,6 +40,11 @@ export default function ListLessonPage() {
       history.push('/face-recognition');
     }
   }
+  const getIcon = (b) => {
+        if(b)
+            return <Check style={{ color: 'green' }} />
+        return <Close color="secondary" />
+    }
   useEffect(() => {
     const fetch = async () => {
       const data = await groupApi.getById(idGroup);
@@ -70,7 +75,7 @@ export default function ListLessonPage() {
                 align="right"
                 className={item.isDone ? classes.textColorGreen : classes.textColorRed}
                 >
-                  {item.isDone ? 'true' : 'false'}
+                  {getIcon(item.isDone)}
                 </TableCell>
               <TableCell align="center">
                 {!item.isDone ? 

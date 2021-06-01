@@ -16,8 +16,7 @@ const classSlice = createSlice({
     name: 'class',
     initialState: {
         data: [],
-        attendList: [],
-        class: {}
+        attendList: []
     },
     reducers: {},
     extraReducers: {
@@ -28,4 +27,5 @@ const classSlice = createSlice({
     }
 });
 
+export const { updateClass } = classSlice.actions;
 export default classSlice.reducer;

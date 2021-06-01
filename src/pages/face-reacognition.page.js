@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getClassById } from '../slices/class';
 import * as faceapi from 'face-api.js';
 import Webcam from "react-webcam";
-import {Image} from '@material-ui/icons/';
+import { Image, Check, Close } from '@material-ui/icons/';
 import './style/style2.css';
 import groupApi from '../api/group.api';
 import classApi from '../api/class.api';
@@ -79,8 +79,6 @@ const FaceRecognitionPage = () => {
     const indexLesson = localStorage.getItem('indexLesson');
     const classId = localStorage.getItem('idClass');
     const idGroup = localStorage.getItem('idGroup');
-    const classInStore = useSelector(state => state.class)
-    const list = classInStore.attendList.map(item => item[indexLesson])
     const classes = useStyles();
     const dispatch = useDispatch();
     const [labels, setLabels] = useState([]);
@@ -88,7 +86,6 @@ const FaceRecognitionPage = () => {
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [start, setStart] = useState(false);
     const [data, setData] = useState([]);
-    const [doneLesson, setDoneLesson] = useState(false)
     const [srcImage, setSrcImage] = useState(null);
     
     const videoConstraints = {
@@ -147,7 +144,7 @@ const FaceRecognitionPage = () => {
     // }
     const endLesson = async () => {
         await groupApi.endLesson(idGroup, indexLesson);
-        setDoneLesson(true);
+        history.push('/group/lesson')
     }
     const onDone = async () => {
         if(labels.length > 0){
@@ -157,6 +154,7 @@ const FaceRecognitionPage = () => {
             const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
             let image
             let canvas
+            let newAttendList = [...attendList]
             imageUpload.addEventListener('change', async (e) => {
                 const file = e.target.files;
                 if (image) image.remove()
@@ -176,7 +174,6 @@ const FaceRecognitionPage = () => {
                 const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
                 const resizedDetections = faceapi.resizeResults(detections, displaySize)
                 const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor))
-                let newAttendList = [...list]
                 results.forEach((result, i) => {
                     const box = resizedDetections[i].detection.box
                     const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() })
@@ -189,10 +186,6 @@ const FaceRecognitionPage = () => {
                         }
                     }
                 })
-                
-                
-                
-
                 await classApi.recognition(classId, newAttendList, indexLesson)
                 setAttendList(newAttendList)
             })  
@@ -203,6 +196,11 @@ const FaceRecognitionPage = () => {
         setStart(!start)
         document.getElementById('webcomContainer').style.display = 'block'
         document.getElementById('webcomContainer').style.position = 'relative'
+    }
+    const getIcon = (b) => {
+        if(b)
+            return <Check style={{ color: 'green' }} />
+        return <Close color="secondary" />
     }
     useEffect(() => {
         const fetchClassData = async () => {
@@ -309,7 +307,7 @@ const FaceRecognitionPage = () => {
                                 </TableCell>
                                 <TableCell align="left">{row.name}</TableCell>
                                 <TableCell align="left">{row.code}</TableCell>
-                                <TableCell align="right">{attendList[index].toString()}</TableCell>
+                                <TableCell align="right">{getIcon(attendList[index])}</TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -320,7 +318,6 @@ const FaceRecognitionPage = () => {
                             End lesson
                         </Button>
                     </div>
-                    {doneLesson && <div className={classes.alertContainer}>End...</div>}
                 </Grid>
             </Grid>
         </div>

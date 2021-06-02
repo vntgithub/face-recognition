@@ -87,7 +87,8 @@ const FaceRecognitionPage = () => {
     const [start, setStart] = useState(false);
     const [data, setData] = useState([]);
     const [srcImage, setSrcImage] = useState(null);
-    
+    const [arrIndexNeedUpdate, setArrIndexNeedUpdate] = useState([])
+    let newAttendList;
     const videoConstraints = {
         width: 1280,
         height: 720,
@@ -157,8 +158,8 @@ const FaceRecognitionPage = () => {
             const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6)
             let image
             let canvas
-            let newAttendList = [...attendList]
             imageUpload.addEventListener('change', async (e) => {
+                let arrIndex = []
                 const file = e.target.files;
                 if (image) image.remove()
                 if (canvas) canvas.remove()
@@ -185,12 +186,12 @@ const FaceRecognitionPage = () => {
                     if(codeRecognition !== 'unknown'){
                         const indexCode = labels.indexOf(codeRecognition)
                         if(indexCode !== -1){
-                            newAttendList[indexCode] = true
+                            arrIndex.push(indexCode)
                         }
                     }
                 })
-                await classApi.recognition(classId, newAttendList, indexLesson)
-                setAttendList(newAttendList)
+                // 
+                setArrIndexNeedUpdate(arrIndex);
             })  
             setModelsLoaded(true)
         }
@@ -229,11 +230,21 @@ const FaceRecognitionPage = () => {
             })
         }
     }, [labels])
+
+    useEffect(() => {
+        const update = async () => {
+            let newAttendList = [...attendList];
+            arrIndexNeedUpdate.forEach(item => newAttendList[item] = true)
+            await classApi.recognition(classId, newAttendList, indexLesson)
+            setAttendList(newAttendList)
+        }
+        update()
+        
+    }, [arrIndexNeedUpdate])
    
     return (
         <div>
             <AppBar />
-            
             <Grid container className={classes.root} >
                 <Grid item xs={8}>
                 {start &&

@@ -142,8 +142,11 @@ const FaceRecognitionPage = () => {
     //         })
     //     }
     // }
-    const endLesson = async () => {
-        await groupApi.endLesson(idGroup, indexLesson);
+    const endLesson = () => {
+        const end = async () => {
+            await groupApi.endLesson(idGroup, indexLesson)
+        }
+        end()
         history.push('/group/lesson')
     }
     const onDone = async () => {

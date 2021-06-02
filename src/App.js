@@ -16,6 +16,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { getCourse } from './slices/course';
 import { getGroupByStudentId } from './slices/group'
 import FaceRecognitionPage from "./pages/face-reacognition.page";
+import HistoryRecognitionPage from './pages/historyrecognition.page'
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -42,6 +43,7 @@ function App() {
         <Route exact path="/signup" component={SignUp} />
         <Route exact path='/group/lesson' component={ListLessonPage} />
         <Route exact path='/face-recognition' component={FaceRecognitionPage} />
+        <Route exact path='/history-recognition' component={HistoryRecognitionPage} />
         <Route path="*" component={EmptyPage} />
       </Switch>
     </Router>

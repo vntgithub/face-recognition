@@ -40,6 +40,13 @@ export default function ListLessonPage() {
       history.push('/face-recognition');
     }
   }
+  const viewLessonHistory = (lesson, index) => {
+    return () => {
+      localStorage.setItem('indexLesson', index)
+      localStorage.setItem('lesson', lesson);
+      history.push('/history-recognition');
+    }
+  }
   const getIcon = (b) => {
         if(b)
             return <Check style={{ color: 'green' }} />
@@ -63,6 +70,7 @@ export default function ListLessonPage() {
                 <TableCell>Name</TableCell>
                 <TableCell align="right">Done</TableCell>
                 <TableCell align="center">Start</TableCell>
+                <TableCell align="center">History</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -86,6 +94,13 @@ export default function ListLessonPage() {
                 <Button variant="contained" disabled>
                   Start
                 </Button>
+              }
+              </TableCell>
+              <TableCell align="center">
+                {item.isDone && 
+                <Button onClick={viewLessonHistory(item.name, index)} variant="contained" color="primary">
+                  View history
+                </Button>  
               }
               </TableCell>
             </TableRow>

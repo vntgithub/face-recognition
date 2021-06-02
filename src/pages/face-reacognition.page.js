@@ -88,7 +88,6 @@ const FaceRecognitionPage = () => {
     const [data, setData] = useState([]);
     const [srcImage, setSrcImage] = useState(null);
     const [arrIndexNeedUpdate, setArrIndexNeedUpdate] = useState([])
-    let newAttendList;
     const videoConstraints = {
         width: 1280,
         height: 720,
@@ -185,12 +184,10 @@ const FaceRecognitionPage = () => {
                     const codeRecognition = result.toString().substr(0,result.toString().indexOf(' '))
                     if(codeRecognition !== 'unknown'){
                         const indexCode = labels.indexOf(codeRecognition)
-                        if(indexCode !== -1){
+                        if(indexCode !== -1)
                             arrIndex.push(indexCode)
-                        }
                     }
                 })
-                // 
                 setArrIndexNeedUpdate(arrIndex);
             })  
             setModelsLoaded(true)
@@ -235,10 +232,11 @@ const FaceRecognitionPage = () => {
         const update = async () => {
             let newAttendList = [...attendList];
             arrIndexNeedUpdate.forEach(item => newAttendList[item] = true)
-            await classApi.recognition(classId, newAttendList, indexLesson)
             setAttendList(newAttendList)
+            await classApi.recognition(classId, newAttendList, indexLesson)
         }
-        update()
+        if(arrIndexNeedUpdate.length > 0)
+            update()
         
     }, [arrIndexNeedUpdate])
    
